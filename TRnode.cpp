@@ -233,7 +233,7 @@ bool TRnode::equals(TRnode* r) {
         len[1] = UiD[7] - r->UiD[7];
         len[2] = UiD[8] - r->UiD[8];
         
-        if (fabs(Vec3::length(len)) < 0.17)
+        if (fabs(Vec3::length(len)) < Game::trackGap )   //// EFO this was 0.17  This is the gap/overlap tolerance to link track nodes into a vector            
             return true;
     }
     return false;
@@ -252,7 +252,7 @@ bool TRnode::equalsIgnoreType(TRnode* r) {
         len[1] = UiD[7] - r->UiD[7];
         len[2] = UiD[8] - r->UiD[8];
         
-        if (fabs(Vec3::length(len)) < 0.17)
+        if (fabs(Vec3::length(len)) < Game::trackGap )  //// EFO this was 0.17  This is the gap/overlap tolerance to link track nodes into a vector            
             return true;
     }
     return false;

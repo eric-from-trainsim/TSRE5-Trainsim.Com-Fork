@@ -165,15 +165,18 @@ WorldObj* WorldObj::createObj(int sh) {
         nowy = (WorldObj*) (new HazardObj());
         (nowy)->resPath = Game::root + "/routes/" + Game::route + "/shapes";    
         (nowy)->typeID = (nowy)->hazard;
-    }/* else if (sh == TS::) {
+        /*
+    } else if (sh == TS::SoundSourceItem) {
         nowy = (WorldObj*) (new SoundSourceObj());
         (nowy)->resPath = Game::root + "/routes/" + Game::route + "/shapes";    
         (nowy)->typeID = (nowy)->soundsource;
-    } else if (sh == TS::) {
+    } else if (sh == TS::SoundRegionItem) {
         nowy = (WorldObj*) (new SoundRegionObj());
         (nowy)->resPath = Game::root + "/routes/" + Game::route + "/shapes";    
         (nowy)->typeID = (nowy)->soundregion;
-    }*/ else {
+         * */
+    }
+     else {
         qDebug() << "# Unsupported WorldObj !!! " << sh;
         //(*nowy) = new WorldObj();
         return NULL;
@@ -249,6 +252,7 @@ WorldObj* WorldObj::createObj(QString sh) {
         nowy = (WorldObj*) (new HazardObj());
         (nowy)->resPath = Game::root + "/routes/" + Game::route + "/shapes";    
         (nowy)->typeID = (nowy)->hazard;
+
     } else if (sh == "soundsource") {
         nowy = (WorldObj*) (new SoundSourceObj());
         (nowy)->resPath = Game::root + "/routes/" + Game::route + "/shapes";    

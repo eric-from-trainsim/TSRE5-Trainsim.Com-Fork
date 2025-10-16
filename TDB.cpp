@@ -179,7 +179,7 @@ void TDB::loadUtf16Data(FileBuffer *data){
                                     continue;
                                 }
                                 if(sh == "trjunctionnode"){
-                                    trackNodes[t]->typ = 2; //typ rozjazd
+                                    trackNodes[t]->typ = 2; //typ junction
                                     trackNodes[t]->args[0] = ParserX::GetNumber(data);
                                     trackNodes[t]->args[1] = ParserX::GetNumber(data);
                                     trackNodes[t]->args[2] = ParserX::GetNumber(data);
@@ -910,7 +910,7 @@ int TDB::joinTracks(int iendp) {
                 if (j == iendp)
                     continue;
                 if (endp->equals(n)) {
-                    //if(Game::debugOutput) qDebug() << "polacze " << iendp << " " << j;
+                    //if(Game::debugOutput) qDebug() << "connected " << iendp << " " << j;
                     //if(Game::debugOutput) qDebug() << n->TrPinS[0] << " " << n->TrPinK[0];
                     //if(Game::debugOutput) qDebug() << endp->TrPinS[0] << " " << endp->TrPinK[0];
                     joinVectorSections(endp->TrPinS[0], n->TrPinS[0]);
@@ -925,7 +925,7 @@ int TDB::joinTracks(int iendp) {
                 if (j == iendp)
                     continue;
                 if (endp->equalsIgnoreType(n)) {
-                    if(Game::debugOutput) qDebug() << "polacze rozjazd " << iendp << " " << j;
+                    if(Game::debugOutput) qDebug() << "junction connected " << iendp << " " << j;
                     appendToJunction(j, iendp, 0);
                     return 0;
                 }
@@ -941,7 +941,7 @@ int TDB::joinTracks(int iendp) {
                 if (j == iendp)
                     continue;
                 if (endp->equalsIgnoreType(n)) {
-                    if(Game::debugOutput) qDebug() << "polacze rozjazd " << iendp << " " << j;
+                    if(Game::debugOutput) qDebug() << "junction connected " << iendp << " " << j;
                     appendToJunction(iendp, j, 0);
                     return 0;
                 }
@@ -1724,8 +1724,8 @@ bool TDB::placeTrack(int x, int z, float* p, float* q, int sectionIdx, int uid, 
     /// EFO  Try to protect against Dynatrax or other shapes that might be missing
     TrackShape* shp = this->tsection->shape[sectionIdx];
     if(shp == NULL){
-        qDebug() << "SectionIdx " << sectionIdx << " not found in TSection, not added to database";
-        return false;
+        qDebug() << "SectionIdx " << sectionIdx << " not found in TSection";
+        // return false;  //// EFO commenting this out as it might be causing a problem
     }
     
     float pp[3];
@@ -1753,7 +1753,7 @@ bool TDB::placeTrack(int x, int z, float* p, float* q, int sectionIdx, int uid, 
         } else {
             endsNumbres[i*2] = endsIds[posIdx];
             isJunction[endsNumbres[i*2]] = 1;
-            //qDebug() << "rozjazd";
+            //qDebug() << "junction";
             //junctions[junctionCount++] = newJunction(x, z, pp, qee, r->value, uid, ends[0]);
         }
         junctionId[endsNumbres[i*2]] = 0;
@@ -1784,7 +1784,7 @@ bool TDB::placeTrack(int x, int z, float* p, float* q, int sectionIdx, int uid, 
         
         if(isJunction[ends[0]] == 1){
             isJunction[ends[0]] = 0;
-            if(Game::debugOutput) qDebug() << "rozjazd" << jNodePosn;
+            if(Game::debugOutput) qDebug() << "junction" << jNodePosn;
             if(jNodePosn != NULL){
                 jNodePosn->push_back(std::array<float,5>());
                 jNodePosn->back()[0] = x;
@@ -1828,7 +1828,7 @@ bool TDB::placeTrack(int x, int z, float* p, float* q, int sectionIdx, int uid, 
             cPos.z = - cPos.z;
             cPos.add(p);
             
-            this->findNearestPositionsOnTDB(posT, (float*)&cPos, cPoints, 0.2);
+            this->findNearestPositionsOnTDB(posT, (float*)&cPos, cPoints, 0.2); 
             if(Game::debugOutput) qDebug() << "crossover";
             if(Game::debugOutput) qDebug() << "TDB1825: " << cPos.x<<cPos.y<<cPos.z;
             if(cPoints.size() != 2)
@@ -3469,6 +3469,29 @@ void TDB::saveEmpty(bool road) {
     out << "	Serial ( 0 )\n";
     out << ")";
     file.close();
+    
+    /// copy the TR Item Tables
+    extension = "tit";
+    if(road) extension = "rit";
+    path = Game::root + "/routes/" + Game::route + "/" + Game::routeName + "." + extension;
+    path.replace("//", "/");
+    if(Game::debugOutput) qDebug() << "TDB3473: "<< path;
+    bkpath = path + "-" + QDateTime::currentDateTime().toString("yyyyMMdd-hhmm") + ".bkup";
+    QFile file2(path);
+    file2.copy(path,bkpath);    
+    file2.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out2(&file2);
+    out2.setRealNumberPrecision(Game::rnp);
+    out2.setCodec("UTF-16");
+    out2.setGenerateByteOrderMark(true);
+    out2 << "SIMISA@@@@@@@@@@JINX0T0t______\n\n";
+    out2 << "TrItemTable ( 0 \n";
+    out2 << "	 \n";
+    out2 << ")";
+    
+    file2.close();
+
+    
 }
     
 void TDB::updateTrNode(int nid){
@@ -3888,6 +3911,9 @@ void TDB::checkDatabase(){
         if(trackItems[i] == NULL) 
             continue;
                            
+//        isPosition = false;    /// EFO commenting as it wasn't there in 5m
+
+        
         if (trackItems[i]->type != "emptyitem"){
             QVector<int> ids;
             int id = findTrItemNodeIds(i, ids);
@@ -4044,9 +4070,14 @@ void TDB::checkDatabase(){
         }
         
         if(Game::loadAllWFiles){
-            if (trackItems[i]->type == "crossoveritem"){  /// EFO Don't delete these
-                return;
-            } else if (trackItems[i]->type == "emptyitem"){
+            /// efo removing /// if (trackItems[i]->type == "crossoveritem"){  /// EFO was trying to save but might be causing problems
+            /// efo removing ///     return;
+            /// efo removing /// } else if (trackItems[i]->type == "emptyitem"){
+            
+            if (trackItems[i]->type == "crossoveritem" || trackItems[i]->type == "emptyitem"){
+
+                
+                
                 if(objects[i].size() > 0){
                     ErrorMessage *e = new ErrorMessage(
                             ErrorMessage::Type_Error, 
@@ -4165,37 +4196,9 @@ void TDB::checkDatabase(){
                 );
                 ErrorMessagesLib::PushErrorMessage(e);
             }
-//            if(n->iTrv == 1)
-//                            qDebug() << "N values:  " << 
-//                       " TrP1:      " << n->TrP1 << "\n" <<
-//                       " TrP2:      " << n->TrP2 << "\n" <<                    
-//                       " TrPinK[0]: " << n->TrPinK[0] << "\n" <<
-//                       " TrPinK[1]: " << n->TrPinK[1] << "\n" <<                    
-//                       " TrPinK[2]: " << n->TrPinK[2] << "\n" <<                    
-//                       " TrPinS[0]: " << n->TrPinS[0] << "\n" <<
-//                       " TrPinS[1]: " << n->TrPinS[1] << "\n" <<                    
-//                       " TrPinS[2]: " << n->TrPinS[2] << "\n" <<                                        
-//
-//                       " args[0]:   " << n->args[0] << "\n" <<                                        
-//                       " args[1]:   " << n->args[1] << "\n" <<                                        
-//                       " args[2]:   " << n->args[2] << "\n" <<                                        
-//                       " args[3]:   " << n->args[3] << "\n" <<                                        
-//                       " args[4]:   " << n->args[4] << "\n" <<                                        
-//                       " args[5]:   " << n->args[5] << "\n" <<                                        
-//                       " args[6]:   " << n->args[6] << "\n" <<                                        
-//                       " args[7]:   " << n->args[7] << "\n" <<                                        
-//                       " args[8]:   " << n->args[8] << "\n" <<                                        
-//                       " args[9]:   " << n->args[9] << "\n" <<                                        
-//
-//                       " iTri:      " << n->iTri << "\n" <<                                                            
-//                       " iTrv:      " << n->iTrv << "\n" <<                                                                                 
-//                       " trItemRef: " << n->trItemRef << "\n" <<                                        
-//                       " typ:       " << n->typ << "\n" <<                                        
-//                    
-//                    "";
-//
+
                     
-            if((n->iTrv == 1) // not a junction
+/*            if((n->iTrv == 1) // not a junction
                       & (!tdbName == 'RoadDB')
                       & (abs((n->TrPinS[0]) - (n->TrPinS[1])) == 2))  // values will always be 2 apart if it's an orphan track
                 
@@ -4214,7 +4217,7 @@ void TDB::checkDatabase(){
                         n->trVectorSection->param[11], 
                         n->trVectorSection->param[12]);
                 ErrorMessagesLib::PushErrorMessage(e);
-            }
+            }  */    //// EFO Block commented out to see if this is causing errors
 
         }
         if (n->typ == 2) {

@@ -22,6 +22,7 @@
 #include "TrackItemObj.h"
 #include "ErrorMessage.h"
 #include "ErrorMessagesLib.h"
+#include "TextObj.h"
 
 HazardObj::HazardObj() {
     this->shape = -1;
@@ -91,6 +92,8 @@ void HazardObj::load(int x, int y) {
     this->loaded = true;
     this->size = -1;
     this->skipLevel = 1;
+    this->txt = NULL;
+    this->txt2 = NULL;
 
     setMartix();
 }
@@ -132,13 +135,13 @@ ErrorMessage* HazardObj::checkForErrors(){
             ErrorMessagesLib::PushErrorMessage(e);
             return e;
         }
-        if((item->type != "hazarditem") && (item->type != "hazzarditem"))  {
+        if(item->type != "hazzarditem"){
             ErrorMessage *e = new ErrorMessage(
                 ErrorMessage::Type_Error, 
                 ErrorMessage::Source_World, 
                 QString("Object '") + type + "' - referenced trackItem has wrong type. UiD: " + QString::number(UiD) + ". ",
                         QString("World Object doesn't match TDB data. Is World Database and TDB out of sync? \n")+
-                        "Expected: hazarditem but found: "+item->type+" .\n"
+                        "Expected: hazzarditem but found: "+item->type+" .\n"
                         "This may cause fatal errors."
                 );
             e->setLocationXYZ(x, -y, position[0], position[1], -position[2]);
@@ -302,16 +305,20 @@ void HazardObj::renderTritems(GLUU* gluu, int selectionColor){
     useSC = (float)selectionColor/(float)(selectionColor+0.000001);
     pointer3d->render(selectionColor | 1*useSC);
    
-    if(Game::renderTrItems == false)            
+    if((Game::renderTrItems == false) && (Game::viewTRLabels == true))
     {
         trRef.clear();
         trRef = QString::number(this->trItemId[1]);
-        TextObj* txt;  /// EFO
-        TextObj* txt2;  /// EFO
+
+        if(txt == NULL)
+        {
         txt = new TextObj(trRef, 4);    
         txt->setColor(200,55,200);
+        }
+        
         txt->render();
-        txt2 = txt;
+        if(txt2 == NULL) txt2 = txt;
+        
         txt2->render(M_PI);
     }
     gluu->mvPopMatrix();

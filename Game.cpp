@@ -20,7 +20,7 @@
 #include <QNetworkReply>
 //#include <QUrl>
 //#include <QUrlQuery>
-//#include "RouteEditorWindow.h"
+//#include "RouteEditorWindow.h"ad
 //#include "LoadWindow.h"
 //#include "CELoadWindow.h"
 #include "SoundList.h"
@@ -39,7 +39,7 @@
 //////// Version
 //////////////////////////////////
 
-QString Game::AppVersion = "Trainsim.Com Fork v0.8.005u";  // over-ride from main.cpp
+QString Game::AppVersion = "Trainsim.Com Fork v0.8.005";  // over-ride from main.cpp
 
 
 bool Game::ServerMode = false;
@@ -76,7 +76,7 @@ QString Game::ActivityToPlay = "";
 Renderer *Game::currentRenderer = NULL;
 bool Game::playerMode = false;
 bool Game::useNetworkEng = false;
-bool Game::useQuadTree = false;
+bool Game::useQuadTree = true;
 bool Game::useTdbEmptyItems = true;
 int Game::allowObjLag = 1000;
 int Game::maxObjLag = 10;
@@ -230,8 +230,10 @@ QString Game::convertUnitD = " m";
 float Game::convertMass = 1;  /// EFO will set to pounds = 2.20462 if useImperial is set to true;
 QString Game::convertUnitM = " t";
 float Game::convertSpeed = 1;  /// EFO will set to mph = 0.621371 if useImperial is set to true;
-QString Game::convertUnitS = " mph";
+QString Game::convertUnitS = " kmph";
 float  Game::deepUnderground = -100;
+bool Game::viewTRLabels = false;
+float Game::trackGap = 0.19;   /// EFO this is the gap allowable for auto-joining tracks and vectors
 
 int   Game::markerHeight = 30;
 int   Game::markerText = 16;
@@ -958,19 +960,31 @@ void Game::load() {
         }
         
         if(setname =="useimperial"){
+             if((setval == "true") or (setval == "1") or (setval == "on"))
+             {            
                 convertDistance = 3.28084;
                 convertMass = 1.102;
                 convertSpeed = 0.621371;
                 convertUnitD = " ft";
                 convertUnitM = " T";               
                 convertUnitS = " mph";
+             }                
         }
 
         if(setname == "deepunderground")
         {
             deepUnderground = setval.toInt();        
         }
+
+
         
+        if(setname == "viewtrlabels"){
+             if((setval == "true") or (setval == "1") or (setval == "on"))
+                 viewTRLabels = true;
+            else
+                 viewTRLabels = false;
+        }       
+
         
         if(setname == "viewcompass"){
              if((setval == "true") or (setval == "1") or (setval == "on"))
@@ -1097,6 +1111,12 @@ void Game::load() {
         if(setname == "realnumberprecision"){
              rnp = setval.toInt();
         }       
+
+        if(setname == "trackgap")
+        {
+            trackGap = setval.toFloat();        
+        }
+
         
         if(Game::debugOutput) qDebug() << "Skip: " << skipped;
         skipped.clear();               
@@ -1319,7 +1339,7 @@ void Game::CreateNewSettingsFile(){
     out << "imageUpgrade = true            // show DDS if available, false uses shapefile defined texture only \n " ; 
     out << "logfiledays = 20               // delete files older than X days \n " ; 
     out << "logfilemax = 50000             // keep only X logs \n " ; 
-    out << "mainWindow = 100, 100          // X, Y of main windows and load window \n " ; 
+    out << "//mainWindow = 100, 100          // X, Y of main windows and load window \n " ; 
     out << "mainWindowLayout = \"PWTS\"      // Order of windows: P = Properties, T = Tools W = World \n " ; 
     out << "maxObjLag = 10  \n " ; 
     out << "mouseSpeed = 1.0  \n " ; 
@@ -1361,7 +1381,7 @@ void Game::CreateNewSettingsFile(){
     out << "legacySupport = false            // enable retention of ViewDBSphere and VDBID when true   \n " ; 
     out << "listfiles = true                 // create lists of files used/unused on exit  \n " ; 
     out << "objectsToRemove = \"\"             // Requires listfiles and LoadAllWFiles, comma separated list of shapes  \n " ; 
-    out << "routeRebuildTDB = true           // Requires unsafemode  \n " ; 
+    out << "routeRebuildTDB = false           // Requires unsafemode  \n " ; 
     out << "sortTileObjects = true           // Orders items by detail level on save   \n " ; 
     out << "\n " ; 
     out << "\n " ; 
@@ -1420,7 +1440,7 @@ void Game::CreateNewSettingsFile(){
     out << "markerLines = true                // Show markers when route loads  \n " ; 
     out << "markerText = 2.5                  // Text size for marker text  \n " ; 
     out << "MSTSshadows = false               // dumb down shadows when true  \n " ; 
-    out << "naviWindow = 50, 50               // X, Y of Navigation window for RE   \n " ; 
+    out << "naviWindow = 10, 50               // X, Y of Navigation window for RE   \n " ; 
     out << "newSymbols = true                 // default is true, false uses the older TSRE pyramids   \n " ; 
     out << "objectLod = 4000                  // 2000 is plenty for most purposes   \n " ; 
     out << "oglDefaultLineWidth = 1           // width of standard lines  \n " ; 
@@ -1432,12 +1452,14 @@ void Game::CreateNewSettingsFile(){
     out << "selectedTerrColor = #FFB612       // terrain selection line color  \n " ; 
     out << "selectedTerrWidth = 4             // terrain selection line width  \n " ; 
     out << "skyColor =  #E0FFFF  \n " ; 
-    out << "statusWindow=0,100                // X, Y of Status Window  \n " ; 
+    out << "statusWindow=10,400                // X, Y of Status Window  \n " ; 
     out << "tileLod = 2                       // tiles in each direction to load  \n " ; 
     out << "toolsHidden = false               // only show the viewport  \n " ; 
     out << "useSuperelevation = false         // apply superelevation when rendering curves  \n " ; 
     out << "viewCompass = true                // show compass at top center  \n " ; 
     out << "viewMarkers = true                // view markers selected in Navi window  \n " ; 
+    out << "viewTRLabels == true              // view data labels for interactives  \n " ;
+    
     out << "wireLineHeight = 6.8              // yellow TDB line height  \n " ; 
     out << "\n " ; 
     out << "\n " ; 

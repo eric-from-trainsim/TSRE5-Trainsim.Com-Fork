@@ -846,7 +846,7 @@ public:
         SignalItem = 929,
         PickupItem = 930,
         PlatformItem = 931,
-        HazardItem = 932,   /// was hazzard
+        HazzardItem = 932,   /// was hazzard
         CarSpawnerItem = 933,
         SidingItem = 934,
         LevelCrItem = 935,
@@ -1463,8 +1463,8 @@ public:
         Wagon = 1546,
         Engine = 1547,
         EOTD = 1548,        
-        HazzardItem = 1932,   /// was hazzard        
         Crossover = 1933,
+        SoundSourceItem = 1934,
         
         TSRE_Requested_Terrain_tFile = 100001,
         TSRE_Requested_Terrain_RawFile = 100002,

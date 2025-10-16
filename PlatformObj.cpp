@@ -663,23 +663,28 @@ void PlatformObj::renderTritems(GLUU* gluu, int selectionColor){
         //QString trRefb = this->getDisplayText();        
         //float scalingb = this->getDisplayScaling(trRefb);            
         //txt = new TextObj(trRefb, 30, scalingb);    
-    
-        txt = new TextObj(this->getDisplayText(), 30, this->getDisplayScaling(this->getDisplayText()));
-        if(this->typeID == this->platform)
-            txt->setColor(80,200,120);   /// Emerald Green
-        if(this->typeID == this->siding)
-            txt->setColor(255,200,0);   /// Yellow
-        
-        txt->render();
-        txt2 = txt;
-        txt2->render(M_PI);
-        
+
+    if((Game::renderTrItems == false) && (Game::viewTRLabels == true))
+        {
+            if(txt == NULL)
+            {
+            
+            txt = new TextObj(this->getDisplayText(), 30, this->getDisplayScaling(this->getDisplayText()));
+            if(this->typeID == this->platform)
+                txt->setColor(80,200,120);   /// Emerald Green
+            if(this->typeID == this->siding)
+                txt->setColor(255,200,0);   /// Yellow
+            }
+            
+            txt->render();
+            
+            if(txt2 == NULL) txt2 = txt;
+            
+            txt2->render(M_PI);
+        }
 
     
     gluu->mvPopMatrix();
-
-
-
     
     gluu->mvPushMatrix();
     Mat4::translate(gluu->mvMatrix, gluu->mvMatrix, drawPositionE[0] + 0 * (drawPositionE[5] - this->x), drawPositionE[1] + 1, -drawPositionE[2] + 0 * (-drawPositionE[6] - this->y));
@@ -693,16 +698,23 @@ void PlatformObj::renderTritems(GLUU* gluu, int selectionColor){
     else
         spointer3d->render(selectionColor | 3*useSC);
 
-        txt3 = new TextObj(this->getDisplayText(), 30, this->getDisplayScaling(this->getDisplayText()));    
-        if(this->typeID == this->platform)
-            txt3->setColor(80,200,120);   /// Emerald Green
-        if(this->typeID == this->siding)
-            txt3->setColor(255,200,0);   /// Yellow
+    if((Game::renderTrItems == false) && (Game::viewTRLabels == true))
+        {
 
-        txt3->render();
-        txt4 = txt3;
-        txt4->render(M_PI);            
+        if(txt3 == NULL)
+        {
+            txt3 = new TextObj(this->getDisplayText(), 30, this->getDisplayScaling(this->getDisplayText()));
+            
+            if(this->typeID == this->platform)
+                txt3->setColor(80,200,120);   /// Emerald Green
+            if(this->typeID == this->siding)
+                txt3->setColor(255,200,0);   /// Yellow
+        }
+            txt3->render();
+            if(txt4 == NULL) txt4 = txt3;
+            txt4->render(M_PI);            
 
+        }
 
     
     gluu->mvPopMatrix();

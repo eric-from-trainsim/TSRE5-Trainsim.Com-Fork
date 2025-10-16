@@ -117,6 +117,8 @@ bool PropertiesHazard::support(GameObj* obj){
         return false;
     if(obj->typeObj != GameObj::worldobj)
         return false;
+    if(((WorldObj*)obj)->type == "hazzard")
+        return true;
     if(((WorldObj*)obj)->type == "hazard")
         return true;
     return false;

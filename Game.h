@@ -247,7 +247,8 @@ public:
     static QStringList preloadTextures;
     static bool objSelected;
     static bool resetTools;
-    
+    static bool viewTRLabels;
+    static float trackGap;
 
 private:
     //static RouteEditorWindow* window;

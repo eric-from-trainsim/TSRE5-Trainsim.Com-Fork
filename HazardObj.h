@@ -14,6 +14,7 @@
 #include "WorldObj.h"
 #include <QString>
 #include "FileBuffer.h"
+#include "TextObj.h"
 
 class TrackItemObj;
 
@@ -48,6 +49,9 @@ private:
     void renderTritems(GLUU* gluu, int selectionColor);
     bool getSimpleBorder(float* border);
     bool getBoxPoints(QVector<float> &points);
+    TextObj* txt = NULL;
+    TextObj* txt2 = NULL;
+    
 };
 
 #endif	/* HAZARDOBJ_H */

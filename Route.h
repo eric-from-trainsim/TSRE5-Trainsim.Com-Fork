@@ -161,7 +161,8 @@ public:
     static QStringList trackList;        
     static QStringList missingList;
     static QStringList shapesList;    
-    static QStringList texturesList;        
+    static QStringList texturesList;    
+    static QStringList staticFlagList;    
     void ListFiles();
     void RebuildTDB();
 

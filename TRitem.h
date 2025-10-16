@@ -18,6 +18,7 @@
 #include <QString>
 #include "Pointer3d.h"
 #include "GameObj.h"
+#include "TextObj.h"
 
 class FileBuffer;
 class QTextStream;
@@ -134,7 +135,10 @@ private:
     int speedpostTrItemDataLength = 0;
     static TrackItemObj* pointer3d; 
     
-    
+    TextObj* txt = NULL;
+    TextObj* txt2 = NULL;
+
+
 };
 
 #endif	/* TRITEM_H */

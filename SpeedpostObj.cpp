@@ -433,8 +433,8 @@ void SpeedpostObj::expandTrItems(){
         
         if(ipoints[i].distance < 0.5)
             continue;
-//        if(ipoints[i].idx == tid)
-//            continue;
+        if(ipoints[i].idx == tid)   //// EFO this was commented out, reverting
+            continue;				//// EFO this was commented out, reverting
         
         int trNodeId = ipoints[i].idx;
         float metry = ipoints[i].m;
@@ -856,30 +856,34 @@ void SpeedpostObj::renderTritems(GLUU* gluu, int selectionColor){
         else
             pointer3d->render(selectionColor | (i+1)*useSC);
 
-        if((Game::renderTrItems == false) && ((this->getNumber()) || (this->getSpeed())))
+        if((Game::renderTrItems == false) && (Game::viewTRLabels == true) && ((this->getNumber()) || (this->getSpeed())) )
         {
             QString trRefN = "";
             QString trRefS = "";
             
             trRefN = QString::number(this->getNumber());
             trRefS = QString::number(this->getSpeed());
+                    
+            if(txt == NULL)
+            {
+                if((this->getNumberInsteadSpeed()) || (this->getNumber()))
+                {
+                    txt = new TextObj(trRefN, 4);    
+                    txt->setColor(99,149,238);   /// CORNFLOWER BLUE
+                }
+
+                if((this->getSpeedInsteadNumber()) || (this->getSpeed()))
+                {
+                    txt = new TextObj(trRefS, 4);                    
+                    txt->setColor(69,242,72);  ///  GREEN
+                }
+                
+            }
+                        
+            if(txt2 == NULL) txt2 = txt;
             
-            if((this->getNumberInsteadSpeed()) || (this->getNumber()))
-            {
-                txt = new TextObj(trRefN, 4);    
-                txt->setColor(99,149,238);   /// CORNFLOWER BLUE
-            }
-
-            if((this->getSpeedInsteadNumber()) || (this->getSpeed()))
-            {
-                txt = new TextObj(trRefS, 4);                    
-                txt->setColor(69,242,72);  ///  GREEN
-            }
-
             txt->render();
-            txt2 = txt;
-            txt2->render(M_PI);
-            txt->loaded = true;
+            txt2->render(M_PI);            
             
         }
              

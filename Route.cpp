@@ -153,8 +153,9 @@ void Route::load(){
     }
     
     if((Game::UnsafeMode) && (Game::routeRebuildTDB)){
-        TDB::saveEmpty(true);
-        TDB::saveEmpty(false);
+        TDB::saveEmpty(true);  /// true = road
+        TDB::saveEmpty(false);  /// false = track
+        qDebug() << "TDB/RDB backed up";
     }
 
     
@@ -208,9 +209,9 @@ void Route::load(){
         confirmMerge();
     }
     
-//    if((Game::UnsafeMode) && (Game::routeRebuildTDB)){
-//        RebuildTDB();
-//    }
+    if((Game::UnsafeMode) && (Game::routeRebuildTDB)){
+        RebuildTDB();
+    }
     
     
 }
@@ -2631,7 +2632,9 @@ void Route::confirmMerge() {
 void Route::RebuildTDB(){
     QProgressDialog *progress = NULL;
     bool gui = true;
-
+    int maxuid = 0;
+    
+    qDebug() << "TDB gap tolerance: " << Game::trackGap ;   
         
     if(gui){
         progress = new QProgressDialog("Rebuilding TDB ...", "", 0, this->tile.size());
@@ -2656,9 +2659,7 @@ void Route::RebuildTDB(){
         
         for(int bi = 0; bi < tTile->jestObiektow; bi++){            
             WorldObj *wObj = tTile->obiekty[bi];
-            
-            
-
+                       
             if(wObj == NULL) continue;
             //if(wObj->isTrackItem()) continue;
             
@@ -2668,20 +2669,23 @@ void Route::RebuildTDB(){
 //               qDebug() << "SectionIDX " << wObj->sectionIdx << " greater than MaxIDS " << tsection->tsectionMaxIdx;
 //               continue;                
 //            }
-            
-            
+
+            maxuid++;
+            wObj->UiD = maxuid;
+            wObj->setModified();
             
             if((Game::routeRebuildTDB == true) && (Game::UnsafeMode == true))
             {                
                 if(wObj->type == "trackobj" || wObj->type == "dyntrack"){
                     
+                                        
                     if( (std::isnan(wObj->position[0])) || (std::isnan(wObj->position[1])) || (std::isnan(wObj->position[2])))
                     {
                         qDebug() << "Tile object skipped due to missing position values " << bi << " " << wObj->fileName << " " << wObj->type;
                         continue;
                     }
                     
-                    qDebug() << "Tile object " << bi << " " << wObj->fileName << " " << wObj->type;
+                    //qDebug() << "Tile object " << bi << " UID " << wObj->UiD << " " << wObj->fileName << " " << wObj->type << " " << "(next UID should be " << maxuid << ")";
                     try{
                     addToTDBIfNotExist(wObj);
                     } 

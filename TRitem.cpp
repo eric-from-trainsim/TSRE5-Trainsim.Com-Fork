@@ -22,6 +22,7 @@
 #include <QDebug>
 #include "TrackItemObj.h"
 #include "TRnode.h"
+#include "TextObj.h"
 
 TrackItemObj* TRitem::pointer3d = NULL;
 
@@ -93,7 +94,7 @@ TRitem* TRitem::newSoundRegionItem(int trItemId, float metry) {
 
 TRitem* TRitem::newHazardItem(int trItemId, float metry) {
     TRitem* trit = new TRitem(trItemId);
-    if (!trit->init("hazarditem")) return NULL;   /// was hazzard
+    if (!trit->init("hazzarditem")) return NULL;   /// was hazzard
     trit->trItemSData1 = metry;
     trit->trItemSData2 = 6;
     return trit;
@@ -333,7 +334,6 @@ bool TRitem::init(QString sh) {
     if (sh == "sidingitem") return true;
     if (sh == "carspawneritem") return true;
     if (sh == "emptyitem") return true;
-    if (sh == "hazarditem") return true;    
     if (sh == "hazzarditem") return true;
     if (sh == "pickupitem") return true;
     return false;
@@ -902,21 +902,28 @@ void TRitem::render(TDB *tdb, GLUU *gluu, float* playerT, float playerRot, int s
         pointer3d->render(selectionColor);
 
     /// EFO Add show the TRitem ID above the TRitem    
-        trRef = "TR:" + QString::number(this->trItemId);
 
-        TextObj* txt;  /// EFO
-        TextObj* txt2;  /// EFO
-        txt = new TextObj(trRef, 4);    
-        txt2 = new TextObj(trRef, 4);    
-        txt->setHeight(2);
-        txt2->setHeight(2);
-    //    txt->setColor(200,55,200);
-        txt->render();
-        txt2->render(M_PI);
-        
+        if(Game::viewTRLabels == true)
+        {        
+            trRef = "TR:" + QString::number(this->trItemId);
+            if(txt == NULL)
+            {
+                txt = new TextObj(trRef, 4);    
+                txt->setHeight(2);
+                
+
+            }            
+
+            txt->render();
+            
+            if(txt2 == NULL) txt2 = txt;            
+            txt2->render(M_PI);
+
+
+            trRef.clear();
+        }
+                
         gluu->mvPopMatrix();
-        trRef.clear();
-     
 }
 
 void TRitem::save(QTextStream* out) {
@@ -964,11 +971,10 @@ void TRitem::save(QTextStream* out, bool tit) {
         *(out) << woff + "	CarSpawnerItem (\n";
     if (type == "emptyitem")
         *(out) << woff + "	EmptyItem (\n";
-    if (type == "hazarditem")
-        *(out) << woff + "	HazardItem (\n";
-    //// EFO  Fixing a 20 year old typo.... 
+
     if (type == "hazzarditem")
-        *(out) << woff + "	HazardItem (\n";
+        *(out) << woff + "	HazzardItem (\n";  //// This is different from 7.012 which has Hazarditem
+    
     if (type == "pickupitem")
         *(out) << woff + "	PickupItem (\n";
 

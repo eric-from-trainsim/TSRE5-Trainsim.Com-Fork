@@ -10,6 +10,7 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QTextEdit>
+#include <QDebug>
 
 UnsafeModeDialog::UnsafeModeDialog(QWidget *parent) : QDialog(parent)
 {
@@ -40,8 +41,8 @@ UnsafeModeDialog::UnsafeModeDialog(QWidget *parent) : QDialog(parent)
     
     if(Game::UnsafeMode) checkBox1->setChecked(true);
     if(Game::routeRebuildTDB) checkBox2->setChecked(true);
-    if(Game::rnp) checkBox3->setChecked(true);
-
+    if(Game::rnp != 7) checkBox3->setChecked(true);    
+    if(Game::rnp != 7) qDebug() << "RNP:" << Game::rnp;
     checkBox1->setEnabled(false);
     checkBox2->setEnabled(false);
     checkBox3->setEnabled(false);
