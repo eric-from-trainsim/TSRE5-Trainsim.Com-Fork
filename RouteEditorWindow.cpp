@@ -50,6 +50,7 @@
 #include "Ref.h"
 #include "NaviWindow.h"
 #include "StatusWindow.h"
+#include "SettingsDialog.h"
 #include "ErrorMessagesWindow.h"
 #include "ClientUsersWindow.h"
 #include "ErrorMessagesLib.h"
@@ -69,6 +70,7 @@
 #include "TexLib.h"
 #include "PropertiesPolyForest.h"
 #include "PropertiesHazard.h"
+#include "SettingsDialog.h"
 
 
 
@@ -85,6 +87,7 @@ RouteEditorWindow::RouteEditorWindow() {
     aboutWindow = new AboutWindow(this);
     naviWindow = new NaviWindow(this);
     statusWindow = new StatusWindow(this);
+    settingsDialog = new SettingsDialog(this);
     
     
     errorMessagesWindow = ErrorMessagesLib::GetWindow(this);
@@ -332,6 +335,13 @@ RouteEditorWindow::RouteEditorWindow() {
     statAction->setShortcut(QKeySequence("F7"));
     toolsMenu->addAction(statAction);
     QObject::connect(statAction, SIGNAL(triggered(bool)), this, SLOT(hideShowStatWidget(bool)));
+    
+    settingsAction = GuiFunct::newMenuCheckAction(tr("S&ettings Window"), this, false); 
+    settingsAction->setShortcut(QKeySequence("F12"));
+    toolsMenu->addAction(settingsAction);
+    QObject::connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(hideShowSettingsDialog(bool)));
+    
+    
     
     shapeViewAction = GuiFunct::newMenuCheckAction(tr("&Shape View Window"), this, false); 
     toolsMenu->addAction(shapeViewAction);
@@ -966,6 +976,13 @@ void RouteEditorWindow::hideShowStatWidget(bool show){
     if(show) { statusWindow->show();  }
     else { statusWindow->hide();  }
 }
+
+void RouteEditorWindow::hideShowSettingsDialog(bool show){
+    if(show) { settingsDialog->show();  }
+    else { settingsDialog->hide();  }
+}
+
+
 void RouteEditorWindow::hideShowToolWidget(bool show){
     if(show) { box->show();     }
     else     { box->hide();    }

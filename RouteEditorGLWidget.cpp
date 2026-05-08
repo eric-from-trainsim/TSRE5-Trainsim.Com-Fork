@@ -1788,6 +1788,26 @@ void RouteEditorGLWidget::selectToolresetRot(){
     placeElev = 0;
 }
 
+void RouteEditorGLWidget::selectToolresetVert(){
+  
+    WorldObj* obj = (WorldObj*)selectedObj;
+    
+    float nq[4];
+    nq[0] = 0.0f;              // Set first value to 0
+    nq[1] = obj->qDirection[1]; // Keep existing second value
+    nq[2] = 0.0f;              // Set third value to 0
+    nq[3] = obj->qDirection[3]; // Keep existing fourth value
+    
+    // 4. Update the object
+    Undo::SinglePushWorldObjData(obj);
+    
+    // Pass the modified float array back to the object
+    obj->setQdirection(nq); 
+    obj->setModified();
+    obj->setMartix();
+}
+
+
 void RouteEditorGLWidget::selectToolSelect(){
     resizeTool = false;
     translateTool = false;
@@ -2428,6 +2448,15 @@ void RouteEditorGLWidget::showContextMenu(const QPoint & point) {
             }
             menu.addAction(defaultMenuActions["resetRot"]);
         }
+        if (toolEnabled == "placeTool" || toolEnabled == "selectTool"){
+            if(defaultMenuActions["resetVert"] == NULL){
+                defaultMenuActions["resetVert"] = new QAction(tr("Reset &Vertical"), this); 
+                QObject::connect(defaultMenuActions["resetVert"], SIGNAL(triggered()), this, SLOT(selectToolresetVert()));
+            }
+            menu.addAction(defaultMenuActions["resetVert"]);
+        }
+        
+        
         if (toolEnabled == "heightTool" || toolEnabled == "waterTerrTool" || toolEnabled == "gapsTerrainTool"){
             menu.addMenu(&menuTool);
             if(defaultMenuActions["toolDirectionUp"] == NULL){

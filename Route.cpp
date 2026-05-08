@@ -181,20 +181,21 @@ void Route::load(){
     
     Game::terrainLib->loadQuadTree();
     OrtsWeatherChange::LoadList();
+    qDebug() << "184";
     ForestObj::LoadForestList();
     ForestObj::ForestClearDistance = trk->forestClearDistance;
     CarSpawnerObj::LoadCarSpawnerList();
-
+    //qDebug() << "188";
     if(Game::loadAllWFiles){        
-                 
+        //qDebug() << "190";                 
         preloadWFilesInit();        
-        
+        //qDebug() << "192";
         if(Game::listFiles == true)
         {        
             ListFiles();        
         }        
     }
-    
+    //qDebug() << "198";
     checkRouteDatabase();
     loaded = true;
     
@@ -715,15 +716,31 @@ void Route::loadActivities(){
         return;
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList()<<"*.act");
+
+    foreach(QString actfile, dir.entryList()){ 
+        // Create a QFileInfo object for the specific file
+        QFileInfo checkFile(dir.filePath(actfile));
+
+        // Only add if the file size exceeds 100 bytes   /// EFO
+        if(checkFile.size() > 100) {
+            activityId.push_back(ActLib::AddAct(dir.path(), actfile)); 
+            if(Game::debugOutput) qDebug() << "activity loaded";            
+        }
+        else
+        {
+            qDebug() << actfile << " is too small, not loaded" ;
+        }
+    } 
+/*
+
     foreach(QString actfile, dir.entryList()){
+        
+        
         activityId.push_back(ActLib::AddAct(dir.path(), actfile));
     }
-    
-    //for(int i = 0; i < ActLib::jestact; i++){
-    //    ActLib::Act[i]->setRouteContent(&path, &service, &traffic);
-    //}
+  */      
 
-    if(Game::debugOutput) qDebug() << "activity loaded";
+
     return;
 }
 
@@ -733,13 +750,28 @@ void Route::loadServices(){
         return;
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList()<<"*.srv");
+
+    foreach(QString actfile, dir.entryList()){
+        QFileInfo checkFile(dir.filePath(actfile));
+
+        if(checkFile.size() > 100) {
+            int id = ActLib::AddService(dir.path(), actfile);
+            //service.push_back(ActLib::Services[id]);
+            if(Game::debugOutput) qDebug() << "service loaded" ;
+        } else {
+            qDebug() << actfile << " is too small, not loaded" ;
+        }
+    }    
+    
+    /*
     foreach(QString actfile, dir.entryList()){
         int id = ActLib::AddService(dir.path(), actfile);
         //service.push_back(ActLib::Services[id]);
     }
-
     if(Game::debugOutput) qDebug() << "service loaded";
+     */
     return;
+    
 }
 
 void Route::loadTraffic(){
@@ -748,12 +780,32 @@ void Route::loadTraffic(){
         return;
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList()<<"*.trf");
+
+    foreach(QString actfile, dir.entryList()){ 
+        // Create a QFileInfo object for the specific file
+        QFileInfo checkFile(dir.filePath(actfile));
+
+        // Only add if the file size exceeds 100 bytes   /// EFO
+        if(checkFile.size() > 100) {
+            activityId.push_back(ActLib::AddTraffic(dir.path(), actfile)); 
+            if(Game::debugOutput) qDebug() << "traffic loaded";
+        }
+        else
+        {
+            qDebug() << actfile << " is too small, not loaded" ;
+        }
+    } 
+
+    
+/*
     foreach(QString actfile, dir.entryList()){
         int id = ActLib::AddTraffic(dir.path(), actfile);
         //traffic.push_back(ActLib::Traffics[id]);
     }
-    if(Game::debugOutput) qDebug() << "traffic loaded";
+*/
+
     return;
+ 
 }
 
 void Route::loadPaths(){

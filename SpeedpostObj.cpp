@@ -886,7 +886,6 @@ void SpeedpostObj::renderTritems(GLUU* gluu, int selectionColor){
             txt2->render(M_PI);            
             
         }
-             
         
         gluu->mvPopMatrix();
     }

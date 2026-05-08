@@ -23,8 +23,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_RouteEditorGLWidget_t {
-    QByteArrayData data[110];
-    char stringdata0[1468];
+    QByteArrayData data[111];
+    char stringdata0[1488];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -102,47 +102,48 @@ QT_MOC_LITERAL(65, 630, 14), // "objectSelected"
 QT_MOC_LITERAL(66, 645, 17), // "QVector<GameObj*>"
 QT_MOC_LITERAL(67, 663, 23), // "selectToolresetMoveStep"
 QT_MOC_LITERAL(68, 687, 18), // "selectToolresetRot"
-QT_MOC_LITERAL(69, 706, 16), // "selectToolSelect"
-QT_MOC_LITERAL(70, 723, 16), // "selectToolRotate"
-QT_MOC_LITERAL(71, 740, 19), // "selectToolTranslate"
-QT_MOC_LITERAL(72, 760, 15), // "selectToolScale"
-QT_MOC_LITERAL(73, 776, 20), // "toolBrushDirectionUp"
-QT_MOC_LITERAL(74, 797, 22), // "toolBrushDirectionDown"
-QT_MOC_LITERAL(75, 820, 29), // "putTerrainTexToolSelectRandom"
-QT_MOC_LITERAL(76, 850, 30), // "putTerrainTexToolSelectPresent"
-QT_MOC_LITERAL(77, 881, 24), // "putTerrainTexToolSelect0"
-QT_MOC_LITERAL(78, 906, 25), // "putTerrainTexToolSelect90"
-QT_MOC_LITERAL(79, 932, 26), // "putTerrainTexToolSelect180"
-QT_MOC_LITERAL(80, 959, 26), // "putTerrainTexToolSelect270"
-QT_MOC_LITERAL(81, 986, 21), // "placeToolStickTerrain"
-QT_MOC_LITERAL(82, 1008, 17), // "placeToolStickAll"
-QT_MOC_LITERAL(83, 1026, 13), // "reloadRefFile"
-QT_MOC_LITERAL(84, 1040, 14), // "reloadMkrFiles"
-QT_MOC_LITERAL(85, 1055, 15), // "setCameraObject"
-QT_MOC_LITERAL(86, 1071, 11), // "setMoveStep"
-QT_MOC_LITERAL(87, 1083, 12), // "paintToolObj"
-QT_MOC_LITERAL(88, 1096, 20), // "paintToolObjSelected"
-QT_MOC_LITERAL(89, 1117, 12), // "paintToolTDB"
-QT_MOC_LITERAL(90, 1130, 18), // "paintToolTDBVector"
-QT_MOC_LITERAL(91, 1149, 15), // "setTerrainToObj"
-QT_MOC_LITERAL(92, 1165, 30), // "adjustObjPositionToTerrainMenu"
-QT_MOC_LITERAL(93, 1196, 30), // "adjustObjRotationToTerrainMenu"
-QT_MOC_LITERAL(94, 1227, 19), // "pickObjForPlacement"
-QT_MOC_LITERAL(95, 1247, 22), // "pickObjRotForPlacement"
-QT_MOC_LITERAL(96, 1270, 26), // "pickObjRotElevForPlacement"
-QT_MOC_LITERAL(97, 1297, 19), // "pickObjRotForCamera"
-QT_MOC_LITERAL(98, 1317, 23), // "pickObjRotForCameraFlip"
-QT_MOC_LITERAL(99, 1341, 9), // "resetCamN"
-QT_MOC_LITERAL(100, 1351, 9), // "resetCamS"
-QT_MOC_LITERAL(101, 1361, 9), // "resetCamE"
-QT_MOC_LITERAL(102, 1371, 9), // "resetCamW"
-QT_MOC_LITERAL(103, 1381, 9), // "resetCamD"
-QT_MOC_LITERAL(104, 1391, 9), // "resetCamZ"
-QT_MOC_LITERAL(105, 1401, 13), // "tangentOrigin"
-QT_MOC_LITERAL(106, 1415, 13), // "tangentTarget"
-QT_MOC_LITERAL(107, 1429, 11), // "tangentMath"
-QT_MOC_LITERAL(108, 1441, 15), // "TangentApplyRot"
-QT_MOC_LITERAL(109, 1457, 10) // "initRoute2"
+QT_MOC_LITERAL(69, 706, 19), // "selectToolresetVert"
+QT_MOC_LITERAL(70, 726, 16), // "selectToolSelect"
+QT_MOC_LITERAL(71, 743, 16), // "selectToolRotate"
+QT_MOC_LITERAL(72, 760, 19), // "selectToolTranslate"
+QT_MOC_LITERAL(73, 780, 15), // "selectToolScale"
+QT_MOC_LITERAL(74, 796, 20), // "toolBrushDirectionUp"
+QT_MOC_LITERAL(75, 817, 22), // "toolBrushDirectionDown"
+QT_MOC_LITERAL(76, 840, 29), // "putTerrainTexToolSelectRandom"
+QT_MOC_LITERAL(77, 870, 30), // "putTerrainTexToolSelectPresent"
+QT_MOC_LITERAL(78, 901, 24), // "putTerrainTexToolSelect0"
+QT_MOC_LITERAL(79, 926, 25), // "putTerrainTexToolSelect90"
+QT_MOC_LITERAL(80, 952, 26), // "putTerrainTexToolSelect180"
+QT_MOC_LITERAL(81, 979, 26), // "putTerrainTexToolSelect270"
+QT_MOC_LITERAL(82, 1006, 21), // "placeToolStickTerrain"
+QT_MOC_LITERAL(83, 1028, 17), // "placeToolStickAll"
+QT_MOC_LITERAL(84, 1046, 13), // "reloadRefFile"
+QT_MOC_LITERAL(85, 1060, 14), // "reloadMkrFiles"
+QT_MOC_LITERAL(86, 1075, 15), // "setCameraObject"
+QT_MOC_LITERAL(87, 1091, 11), // "setMoveStep"
+QT_MOC_LITERAL(88, 1103, 12), // "paintToolObj"
+QT_MOC_LITERAL(89, 1116, 20), // "paintToolObjSelected"
+QT_MOC_LITERAL(90, 1137, 12), // "paintToolTDB"
+QT_MOC_LITERAL(91, 1150, 18), // "paintToolTDBVector"
+QT_MOC_LITERAL(92, 1169, 15), // "setTerrainToObj"
+QT_MOC_LITERAL(93, 1185, 30), // "adjustObjPositionToTerrainMenu"
+QT_MOC_LITERAL(94, 1216, 30), // "adjustObjRotationToTerrainMenu"
+QT_MOC_LITERAL(95, 1247, 19), // "pickObjForPlacement"
+QT_MOC_LITERAL(96, 1267, 22), // "pickObjRotForPlacement"
+QT_MOC_LITERAL(97, 1290, 26), // "pickObjRotElevForPlacement"
+QT_MOC_LITERAL(98, 1317, 19), // "pickObjRotForCamera"
+QT_MOC_LITERAL(99, 1337, 23), // "pickObjRotForCameraFlip"
+QT_MOC_LITERAL(100, 1361, 9), // "resetCamN"
+QT_MOC_LITERAL(101, 1371, 9), // "resetCamS"
+QT_MOC_LITERAL(102, 1381, 9), // "resetCamE"
+QT_MOC_LITERAL(103, 1391, 9), // "resetCamW"
+QT_MOC_LITERAL(104, 1401, 9), // "resetCamD"
+QT_MOC_LITERAL(105, 1411, 9), // "resetCamZ"
+QT_MOC_LITERAL(106, 1421, 13), // "tangentOrigin"
+QT_MOC_LITERAL(107, 1435, 13), // "tangentTarget"
+QT_MOC_LITERAL(108, 1449, 11), // "tangentMath"
+QT_MOC_LITERAL(109, 1461, 15), // "TangentApplyRot"
+QT_MOC_LITERAL(110, 1477, 10) // "initRoute2"
 
     },
     "RouteEditorGLWidget\0showWindow\0\0"
@@ -164,9 +165,10 @@ QT_MOC_LITERAL(109, 1457, 10) // "initRoute2"
     "QMap<int,QPair<int,int>*>\0createNewLoTiles\0"
     "objectSelected\0QVector<GameObj*>\0"
     "selectToolresetMoveStep\0selectToolresetRot\0"
-    "selectToolSelect\0selectToolRotate\0"
-    "selectToolTranslate\0selectToolScale\0"
-    "toolBrushDirectionUp\0toolBrushDirectionDown\0"
+    "selectToolresetVert\0selectToolSelect\0"
+    "selectToolRotate\0selectToolTranslate\0"
+    "selectToolScale\0toolBrushDirectionUp\0"
+    "toolBrushDirectionDown\0"
     "putTerrainTexToolSelectRandom\0"
     "putTerrainTexToolSelectPresent\0"
     "putTerrainTexToolSelect0\0"
@@ -196,7 +198,7 @@ static const uint qt_meta_data_RouteEditorGLWidget[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-      89,   14, // methods
+      90,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -204,97 +206,98 @@ static const uint qt_meta_data_RouteEditorGLWidget[] = {
       21,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,  459,    2, 0x06 /* Public */,
-       3,    1,  460,    2, 0x06 /* Public */,
-       6,    1,  463,    2, 0x06 /* Public */,
-       9,    2,  466,    2, 0x06 /* Public */,
-      12,    1,  471,    2, 0x06 /* Public */,
-      15,    1,  474,    2, 0x06 /* Public */,
-      17,    1,  477,    2, 0x06 /* Public */,
-      19,    1,  480,    2, 0x06 /* Public */,
-      21,    1,  483,    2, 0x06 /* Public */,
-      24,    1,  486,    2, 0x06 /* Public */,
-      25,    3,  489,    2, 0x06 /* Public */,
-      29,    1,  496,    2, 0x06 /* Public */,
-      32,    0,  499,    2, 0x06 /* Public */,
-      33,    0,  500,    2, 0x06 /* Public */,
-      34,    1,  501,    2, 0x06 /* Public */,
-      34,    2,  504,    2, 0x06 /* Public */,
+       1,    0,  464,    2, 0x06 /* Public */,
+       3,    1,  465,    2, 0x06 /* Public */,
+       6,    1,  468,    2, 0x06 /* Public */,
+       9,    2,  471,    2, 0x06 /* Public */,
+      12,    1,  476,    2, 0x06 /* Public */,
+      15,    1,  479,    2, 0x06 /* Public */,
+      17,    1,  482,    2, 0x06 /* Public */,
+      19,    1,  485,    2, 0x06 /* Public */,
+      21,    1,  488,    2, 0x06 /* Public */,
+      24,    1,  491,    2, 0x06 /* Public */,
+      25,    3,  494,    2, 0x06 /* Public */,
+      29,    1,  501,    2, 0x06 /* Public */,
+      32,    0,  504,    2, 0x06 /* Public */,
+      33,    0,  505,    2, 0x06 /* Public */,
+      34,    1,  506,    2, 0x06 /* Public */,
       34,    2,  509,    2, 0x06 /* Public */,
       34,    2,  514,    2, 0x06 /* Public */,
       34,    2,  519,    2, 0x06 /* Public */,
-      35,    2,  524,    2, 0x06 /* Public */,
-      38,    0,  529,    2, 0x06 /* Public */,
+      34,    2,  524,    2, 0x06 /* Public */,
+      35,    2,  529,    2, 0x06 /* Public */,
+      38,    0,  534,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      39,    0,  530,    2, 0x0a /* Public */,
-      40,    1,  531,    2, 0x0a /* Public */,
-      41,    1,  534,    2, 0x0a /* Public */,
-      44,    1,  537,    2, 0x0a /* Public */,
-      44,    2,  540,    2, 0x0a /* Public */,
-      44,    5,  545,    2, 0x0a /* Public */,
-      49,    1,  556,    2, 0x0a /* Public */,
-      49,    2,  559,    2, 0x0a /* Public */,
+      39,    0,  535,    2, 0x0a /* Public */,
+      40,    1,  536,    2, 0x0a /* Public */,
+      41,    1,  539,    2, 0x0a /* Public */,
+      44,    1,  542,    2, 0x0a /* Public */,
+      44,    2,  545,    2, 0x0a /* Public */,
+      44,    5,  550,    2, 0x0a /* Public */,
+      49,    1,  561,    2, 0x0a /* Public */,
       49,    2,  564,    2, 0x0a /* Public */,
       49,    2,  569,    2, 0x0a /* Public */,
       49,    2,  574,    2, 0x0a /* Public */,
-      51,    0,  579,    2, 0x0a /* Public */,
-      52,    0,  580,    2, 0x0a /* Public */,
-      53,    0,  581,    2, 0x0a /* Public */,
-      54,    0,  582,    2, 0x0a /* Public */,
-      55,    0,  583,    2, 0x0a /* Public */,
-      56,    1,  584,    2, 0x0a /* Public */,
-      56,    0,  587,    2, 0x2a /* Public | MethodCloned */,
-      58,    0,  588,    2, 0x0a /* Public */,
-      59,    0,  589,    2, 0x0a /* Public */,
-      60,    1,  590,    2, 0x0a /* Public */,
-      62,    1,  593,    2, 0x0a /* Public */,
-      64,    1,  596,    2, 0x0a /* Public */,
-      65,    1,  599,    2, 0x0a /* Public */,
-      65,    1,  602,    2, 0x0a /* Public */,
-      67,    0,  605,    2, 0x0a /* Public */,
-      68,    0,  606,    2, 0x0a /* Public */,
-      69,    0,  607,    2, 0x0a /* Public */,
-      70,    0,  608,    2, 0x0a /* Public */,
-      71,    0,  609,    2, 0x0a /* Public */,
-      72,    0,  610,    2, 0x0a /* Public */,
-      73,    0,  611,    2, 0x0a /* Public */,
-      74,    0,  612,    2, 0x0a /* Public */,
-      75,    0,  613,    2, 0x0a /* Public */,
-      76,    0,  614,    2, 0x0a /* Public */,
-      77,    0,  615,    2, 0x0a /* Public */,
-      78,    0,  616,    2, 0x0a /* Public */,
-      79,    0,  617,    2, 0x0a /* Public */,
-      80,    0,  618,    2, 0x0a /* Public */,
-      81,    0,  619,    2, 0x0a /* Public */,
-      82,    0,  620,    2, 0x0a /* Public */,
-      83,    0,  621,    2, 0x0a /* Public */,
-      84,    0,  622,    2, 0x0a /* Public */,
-      85,    1,  623,    2, 0x0a /* Public */,
-      86,    1,  626,    2, 0x0a /* Public */,
-      87,    0,  629,    2, 0x0a /* Public */,
-      88,    0,  630,    2, 0x0a /* Public */,
-      89,    0,  631,    2, 0x0a /* Public */,
-      90,    0,  632,    2, 0x0a /* Public */,
-      91,    0,  633,    2, 0x0a /* Public */,
-      92,    0,  634,    2, 0x0a /* Public */,
-      93,    0,  635,    2, 0x0a /* Public */,
-      94,    0,  636,    2, 0x0a /* Public */,
-      95,    0,  637,    2, 0x0a /* Public */,
-      96,    0,  638,    2, 0x0a /* Public */,
-      97,    0,  639,    2, 0x0a /* Public */,
-      98,    0,  640,    2, 0x0a /* Public */,
-      99,    0,  641,    2, 0x0a /* Public */,
-     100,    0,  642,    2, 0x0a /* Public */,
-     101,    0,  643,    2, 0x0a /* Public */,
-     102,    0,  644,    2, 0x0a /* Public */,
-     103,    0,  645,    2, 0x0a /* Public */,
-     104,    0,  646,    2, 0x0a /* Public */,
-     105,    0,  647,    2, 0x0a /* Public */,
-     106,    0,  648,    2, 0x0a /* Public */,
-     107,    0,  649,    2, 0x0a /* Public */,
-     108,    0,  650,    2, 0x0a /* Public */,
-     109,    0,  651,    2, 0x0a /* Public */,
+      49,    2,  579,    2, 0x0a /* Public */,
+      51,    0,  584,    2, 0x0a /* Public */,
+      52,    0,  585,    2, 0x0a /* Public */,
+      53,    0,  586,    2, 0x0a /* Public */,
+      54,    0,  587,    2, 0x0a /* Public */,
+      55,    0,  588,    2, 0x0a /* Public */,
+      56,    1,  589,    2, 0x0a /* Public */,
+      56,    0,  592,    2, 0x2a /* Public | MethodCloned */,
+      58,    0,  593,    2, 0x0a /* Public */,
+      59,    0,  594,    2, 0x0a /* Public */,
+      60,    1,  595,    2, 0x0a /* Public */,
+      62,    1,  598,    2, 0x0a /* Public */,
+      64,    1,  601,    2, 0x0a /* Public */,
+      65,    1,  604,    2, 0x0a /* Public */,
+      65,    1,  607,    2, 0x0a /* Public */,
+      67,    0,  610,    2, 0x0a /* Public */,
+      68,    0,  611,    2, 0x0a /* Public */,
+      69,    0,  612,    2, 0x0a /* Public */,
+      70,    0,  613,    2, 0x0a /* Public */,
+      71,    0,  614,    2, 0x0a /* Public */,
+      72,    0,  615,    2, 0x0a /* Public */,
+      73,    0,  616,    2, 0x0a /* Public */,
+      74,    0,  617,    2, 0x0a /* Public */,
+      75,    0,  618,    2, 0x0a /* Public */,
+      76,    0,  619,    2, 0x0a /* Public */,
+      77,    0,  620,    2, 0x0a /* Public */,
+      78,    0,  621,    2, 0x0a /* Public */,
+      79,    0,  622,    2, 0x0a /* Public */,
+      80,    0,  623,    2, 0x0a /* Public */,
+      81,    0,  624,    2, 0x0a /* Public */,
+      82,    0,  625,    2, 0x0a /* Public */,
+      83,    0,  626,    2, 0x0a /* Public */,
+      84,    0,  627,    2, 0x0a /* Public */,
+      85,    0,  628,    2, 0x0a /* Public */,
+      86,    1,  629,    2, 0x0a /* Public */,
+      87,    1,  632,    2, 0x0a /* Public */,
+      88,    0,  635,    2, 0x0a /* Public */,
+      89,    0,  636,    2, 0x0a /* Public */,
+      90,    0,  637,    2, 0x0a /* Public */,
+      91,    0,  638,    2, 0x0a /* Public */,
+      92,    0,  639,    2, 0x0a /* Public */,
+      93,    0,  640,    2, 0x0a /* Public */,
+      94,    0,  641,    2, 0x0a /* Public */,
+      95,    0,  642,    2, 0x0a /* Public */,
+      96,    0,  643,    2, 0x0a /* Public */,
+      97,    0,  644,    2, 0x0a /* Public */,
+      98,    0,  645,    2, 0x0a /* Public */,
+      99,    0,  646,    2, 0x0a /* Public */,
+     100,    0,  647,    2, 0x0a /* Public */,
+     101,    0,  648,    2, 0x0a /* Public */,
+     102,    0,  649,    2, 0x0a /* Public */,
+     103,    0,  650,    2, 0x0a /* Public */,
+     104,    0,  651,    2, 0x0a /* Public */,
+     105,    0,  652,    2, 0x0a /* Public */,
+     106,    0,  653,    2, 0x0a /* Public */,
+     107,    0,  654,    2, 0x0a /* Public */,
+     108,    0,  655,    2, 0x0a /* Public */,
+     109,    0,  656,    2, 0x0a /* Public */,
+     110,    0,  657,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -345,6 +348,7 @@ static const uint qt_meta_data_RouteEditorGLWidget[] = {
     QMetaType::Void, 0x80000000 | 63,   31,
     QMetaType::Void, 0x80000000 | 22,   23,
     QMetaType::Void, 0x80000000 | 66,   23,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -446,47 +450,48 @@ void RouteEditorGLWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, 
         case 45: _t->objectSelected((*reinterpret_cast< QVector<GameObj*>(*)>(_a[1]))); break;
         case 46: _t->selectToolresetMoveStep(); break;
         case 47: _t->selectToolresetRot(); break;
-        case 48: _t->selectToolSelect(); break;
-        case 49: _t->selectToolRotate(); break;
-        case 50: _t->selectToolTranslate(); break;
-        case 51: _t->selectToolScale(); break;
-        case 52: _t->toolBrushDirectionUp(); break;
-        case 53: _t->toolBrushDirectionDown(); break;
-        case 54: _t->putTerrainTexToolSelectRandom(); break;
-        case 55: _t->putTerrainTexToolSelectPresent(); break;
-        case 56: _t->putTerrainTexToolSelect0(); break;
-        case 57: _t->putTerrainTexToolSelect90(); break;
-        case 58: _t->putTerrainTexToolSelect180(); break;
-        case 59: _t->putTerrainTexToolSelect270(); break;
-        case 60: _t->placeToolStickTerrain(); break;
-        case 61: _t->placeToolStickAll(); break;
-        case 62: _t->reloadRefFile(); break;
-        case 63: _t->reloadMkrFiles(); break;
-        case 64: _t->setCameraObject((*reinterpret_cast< GameObj*(*)>(_a[1]))); break;
-        case 65: _t->setMoveStep((*reinterpret_cast< float(*)>(_a[1]))); break;
-        case 66: _t->paintToolObj(); break;
-        case 67: _t->paintToolObjSelected(); break;
-        case 68: _t->paintToolTDB(); break;
-        case 69: _t->paintToolTDBVector(); break;
-        case 70: _t->setTerrainToObj(); break;
-        case 71: _t->adjustObjPositionToTerrainMenu(); break;
-        case 72: _t->adjustObjRotationToTerrainMenu(); break;
-        case 73: _t->pickObjForPlacement(); break;
-        case 74: _t->pickObjRotForPlacement(); break;
-        case 75: _t->pickObjRotElevForPlacement(); break;
-        case 76: _t->pickObjRotForCamera(); break;
-        case 77: _t->pickObjRotForCameraFlip(); break;
-        case 78: _t->resetCamN(); break;
-        case 79: _t->resetCamS(); break;
-        case 80: _t->resetCamE(); break;
-        case 81: _t->resetCamW(); break;
-        case 82: _t->resetCamD(); break;
-        case 83: _t->resetCamZ(); break;
-        case 84: _t->tangentOrigin(); break;
-        case 85: _t->tangentTarget(); break;
-        case 86: _t->tangentMath(); break;
-        case 87: _t->TangentApplyRot(); break;
-        case 88: _t->initRoute2(); break;
+        case 48: _t->selectToolresetVert(); break;
+        case 49: _t->selectToolSelect(); break;
+        case 50: _t->selectToolRotate(); break;
+        case 51: _t->selectToolTranslate(); break;
+        case 52: _t->selectToolScale(); break;
+        case 53: _t->toolBrushDirectionUp(); break;
+        case 54: _t->toolBrushDirectionDown(); break;
+        case 55: _t->putTerrainTexToolSelectRandom(); break;
+        case 56: _t->putTerrainTexToolSelectPresent(); break;
+        case 57: _t->putTerrainTexToolSelect0(); break;
+        case 58: _t->putTerrainTexToolSelect90(); break;
+        case 59: _t->putTerrainTexToolSelect180(); break;
+        case 60: _t->putTerrainTexToolSelect270(); break;
+        case 61: _t->placeToolStickTerrain(); break;
+        case 62: _t->placeToolStickAll(); break;
+        case 63: _t->reloadRefFile(); break;
+        case 64: _t->reloadMkrFiles(); break;
+        case 65: _t->setCameraObject((*reinterpret_cast< GameObj*(*)>(_a[1]))); break;
+        case 66: _t->setMoveStep((*reinterpret_cast< float(*)>(_a[1]))); break;
+        case 67: _t->paintToolObj(); break;
+        case 68: _t->paintToolObjSelected(); break;
+        case 69: _t->paintToolTDB(); break;
+        case 70: _t->paintToolTDBVector(); break;
+        case 71: _t->setTerrainToObj(); break;
+        case 72: _t->adjustObjPositionToTerrainMenu(); break;
+        case 73: _t->adjustObjRotationToTerrainMenu(); break;
+        case 74: _t->pickObjForPlacement(); break;
+        case 75: _t->pickObjRotForPlacement(); break;
+        case 76: _t->pickObjRotElevForPlacement(); break;
+        case 77: _t->pickObjRotForCamera(); break;
+        case 78: _t->pickObjRotForCameraFlip(); break;
+        case 79: _t->resetCamN(); break;
+        case 80: _t->resetCamS(); break;
+        case 81: _t->resetCamE(); break;
+        case 82: _t->resetCamW(); break;
+        case 83: _t->resetCamD(); break;
+        case 84: _t->resetCamZ(); break;
+        case 85: _t->tangentOrigin(); break;
+        case 86: _t->tangentTarget(); break;
+        case 87: _t->tangentMath(); break;
+        case 88: _t->TangentApplyRot(); break;
+        case 89: _t->initRoute2(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -672,13 +677,13 @@ int RouteEditorGLWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 89)
+        if (_id < 90)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 89;
+        _id -= 90;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 89)
+        if (_id < 90)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 89;
+        _id -= 90;
     }
     return _id;
 }

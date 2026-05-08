@@ -45,6 +45,7 @@ build/Release_x64/MinGW_64b-Windows/PolyForestObj.o
 build/Release_x64/MinGW_64b-Windows/PropertiesHazard.o
 build/Release_x64/MinGW_64b-Windows/PropertiesPolyForest.o
 build/Release_x64/MinGW_64b-Windows/RouteMergeDialog.o
+build/Release_x64/MinGW_64b-Windows/SettingsDialog.o
 build/Release_x64/MinGW_64b-Windows/StatusWindow.o
 build/Release_x64/MinGW_64b-Windows/UnsafeModeDialog.o
 build/Release_x64/MinGW_64b-Windows/EditFileNameDialog.o
@@ -248,6 +249,7 @@ build/Release_x64/MinGW_64b-Windows/moc_ConUnitsWidget.o
 build/Release_x64/MinGW_64b-Windows/moc_PropertiesHazard.o
 build/Release_x64/MinGW_64b-Windows/moc_PropertiesPolyForest.o
 build/Release_x64/MinGW_64b-Windows/moc_RouteMergeDialog.o
+build/Release_x64/MinGW_64b-Windows/moc_SettingsDialog.o
 build/Release_x64/MinGW_64b-Windows/moc_StatusWindow.o
 build/Release_x64/MinGW_64b-Windows/moc_UnsafeModeDialog.o
 build/Release_x64/MinGW_64b-Windows/moc_EditFileNameDialog.o

@@ -91,6 +91,7 @@ public slots:
     
     void selectToolresetMoveStep();
     void selectToolresetRot();
+    void selectToolresetVert();    
     void selectToolSelect();
     void selectToolRotate();
     void selectToolTranslate();

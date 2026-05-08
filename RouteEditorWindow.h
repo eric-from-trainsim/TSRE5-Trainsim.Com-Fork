@@ -25,6 +25,7 @@ class NaviBox;
 class AboutWindow;
 class NaviWindow;
 class StatusWindow;
+class SettingsDialog;
 class ShapeViewWindow;
 class PropertiesAbstract;
 class GameObj;
@@ -64,6 +65,7 @@ public slots:
     void hideShowPropertiesWidget(bool show);
     void hideShowNaviWidget(bool);
     void hideShowStatWidget(bool);    
+    void hideShowSettingsDialog(bool);
     void hideShowShapeViewWidget(bool);
     void hideShowErrorMsgWidget(bool);
     void viewWorldGrid(bool show);
@@ -152,6 +154,7 @@ private:
     QAction *propertiesAction;
     QAction *naviAction;
     QAction *statAction;
+    QAction *settingsAction;    
     QAction *shapeViewAction;
     QAction *errorViewAction;
     QAction *toolsAction;
@@ -179,6 +182,7 @@ private:
     AboutWindow* aboutWindow;
     NaviWindow* naviWindow;
     StatusWindow* statusWindow;
+    SettingsDialog* settingsDialog;    
     ErrorMessagesWindow* errorMessagesWindow;
     ClientUsersWindow* clientUsersWindow;
     ActivityEventWindow* activityEventWindow;

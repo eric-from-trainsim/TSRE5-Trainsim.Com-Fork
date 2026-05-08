@@ -34,12 +34,13 @@
 #include "NaviWindow.h"
 #include "StatusWindow.h"
 #include "Camera.h"
+#include "SettingsDialog.h"
 
 //////////////////////////////////
 //////// Version
 //////////////////////////////////
 
-QString Game::AppVersion = "Trainsim.Com Fork v0.8.005";  // over-ride from main.cpp
+QString Game::AppVersion = "Trainsim.Com Fork v0.8.006c";  // over-ride from main.cpp
 
 
 bool Game::ServerMode = false;
@@ -70,7 +71,7 @@ bool Game::loadActivities = true;
 bool Game::loadConsists = true;
 //QString Game::route = "traska";
 //QString Game::route = "cmk";
-QString Game::mainWindowLayout = "PWT";
+QString Game::mainWindowLayout = "PWTS";
 QString Game::ceWindowLayout = "C1";
 QString Game::ActivityToPlay = "";
 Renderer *Game::currentRenderer = NULL;
@@ -343,7 +344,11 @@ void Game::load() {
     
     if (!file.exists()){
         qDebug() << "creating new settings file";
-        CreateNewSettingsFile();
+        ////  CreateNewSettingsFile();   /// EFO replacing this with SettingsDialog's new create 
+        SettingsDialog* diag = new SettingsDialog(nullptr); // Create the object
+        diag->loadSettings();                               // Populate the maps from current settings.txt
+        diag->save(path);                                   // Execute the save to your new path
+        delete diag;                                        // Clean up memory
     }
     
     if (!file.open(QIODevice::ReadOnly)){
@@ -899,13 +904,12 @@ void Game::load() {
         if(setname =="startapp"){
             startapp = setval;
         }
-
+/*
         if(setname =="markerlines"){
             if((setval == "true") or (setval == "1") or (setval == "on"))
                 markerLines = true;
-            else
-                markerLines = false; 
         }
+  */      
         if(setname =="seasonalediting"){
             if((setval == "true") or (setval == "1") or (setval == "on"))
                 seasonalEditing = true;
@@ -992,14 +996,14 @@ void Game::load() {
             else
                  viewCompass = false;
         }       
-
+/*
         if(setname == "viewmarkers"){
              if((setval == "true") or (setval == "1") or (setval == "on"))
                  viewMarkers = true;
             else
                  viewMarkers = false;
         }       
-
+*/
         if(setname == "listfiles"){
              if((setval == "true") or (setval == "1") or (setval == "on"))
                  listFiles = true;
@@ -1374,7 +1378,7 @@ void Game::CreateNewSettingsFile(){
     out << "\n " ; 
     out << "\n " ; 
     out << "//// Route Editor File Management Tokens  \n " ; 
-    out << "autoFix = true                   // repair TDB anomalies  \n " ; 
+    out << "autoFix = false                   // repair TDB anomalies  \n " ; 
     out << "deepunderground = -100           // flag pieces that aren't on the terrain  \n " ; 
     out << "deleteTrWatermarks = true        // removes detail not used by ORTS  \n " ; 
     out << "deleteViewDbSpheres = true       // removes detail not used by ORTS  \n " ; 
