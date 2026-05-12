@@ -205,15 +205,16 @@ void Route::load(){
     skydome = new Skydome();
  
     // Route Merge. 
-    if(Game::routeMergeString.length() > 0){
- 
+    if(Game::routeMergeString.trimmed().length() > 0) { 
+        qDebug() << "route merge string: " << Game::routeMergeString.trimmed().length() << "  " << Game::routeMergeString.trimmed();
         confirmMerge();
     }
     
+    qDebug() << "r211";
     if((Game::UnsafeMode) && (Game::routeRebuildTDB)){
         RebuildTDB();
     }
-    
+    qDebug() << "r215";
     
 }
 

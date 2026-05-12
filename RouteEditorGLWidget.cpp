@@ -247,9 +247,13 @@ void RouteEditorGLWidget::initRoute2(){
     if(Game::ActivityToPlay.length() > 0){
         playInit();
     }
+    qDebug() << "REGL250";
     emit routeLoaded(route);
-    emit showWindow();     
+    qDebug() << "REGL252";
+    emit showWindow();  
+    qDebug() << "REGL254";
     emit preloadTexturesSignal();
+    qDebug() << "REGL256";
     
     return;
 }
@@ -339,7 +343,7 @@ void RouteEditorGLWidget::initializeGL() {
 
     lastTime = QDateTime::currentMSecsSinceEpoch();
     
-    
+    if(Game::extendedDebug) qDebug() << "REGLW346";
     int timerStep = 15;
     if (Game::fpsLimit > 0)
         timerStep = 1000 / Game::fpsLimit;
@@ -375,7 +379,7 @@ void RouteEditorGLWidget::initializeGL() {
     
     //emit routeLoaded(route);
     emit mkrList(route->getMkrList());
-
+    if(Game::extendedDebug) qDebug() << "REGLW383";    
     gluu->makeShadowFramebuffer(FramebufferName1, depthTexture1, Game::shadowMapSize, GL_TEXTURE2);
     gluu->makeShadowFramebuffer(FramebufferName2, depthTexture2, Game::shadowLowMapSize, GL_TEXTURE3);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -388,6 +392,7 @@ void RouteEditorGLWidget::initializeGL() {
 }
 
 void RouteEditorGLWidget::reloadRefFile(){
+
     route->loadAddons();
     //route->ref = new Ref((Game::root + "/routes/" + Game::route + "/" + Game::routeName + ".ref"));
     emit refreshObjLists();
@@ -535,6 +540,7 @@ void RouteEditorGLWidget::paintGL(){
 }
 
 void RouteEditorGLWidget::paintGL2() {
+    if(Game::extendedDebug) qDebug() << "REGLW543";
     Game::currentShapeLib = currentShapeLib;
     if (route == NULL) return;
     if (!route->loaded) return;

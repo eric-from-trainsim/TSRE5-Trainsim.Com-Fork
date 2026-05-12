@@ -50,6 +50,7 @@ public:
     static bool UseWorkingDir;
     static QString AppVersion;
     static QString AppDataVersion;
+    static QString AppRepository;
     static QString AppName;
     static QString root;
     static QString route;
@@ -144,8 +145,6 @@ public:
     static QString StyleYellowButton;
     static QString StyleGreenText;
     static QString StyleRedText;
-    static QString imageMapsUrl;
-    static int mapImageResolution;
     static bool autoNewTiles;
     static bool autoGeoTerrain;
     static bool useSuperelevation;
@@ -226,7 +225,20 @@ public:
     static float sigOffset;
     static QStringList markerFiles;
     static bool reload;
-    static QString MapAPIKey;    
+ 
+    static QString imageMapsUrl;
+    static QString mapEngine;
+    static int mapImageResolution; 
+    static QString MapAPIKey;            
+    static QString GoogleImageMapURL;
+    static QString GoogleAPIKey;
+    static int GoogleImageMapsZoomOffset;        
+    static QString MapBoxImageMapURL;
+    static int MapBoxImageMapsZoomOffset;
+    static QString MapBoxAPIKey;    
+    
+ 
+    
     static bool imageSubstitution;
     static bool imageUpgrade;
     static QString includeFolder;

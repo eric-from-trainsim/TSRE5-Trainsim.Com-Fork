@@ -40,7 +40,7 @@
 //////// Version
 //////////////////////////////////
 
-QString Game::AppVersion = "Trainsim.Com Fork v0.8.006c";  // over-ride from main.cpp
+QString Game::AppVersion = "Trainsim.Com Fork v0.8.006e";  // over-ride from main.cpp
 
 
 bool Game::ServerMode = false;
@@ -57,11 +57,12 @@ bool Game::UseWorkingDir = false;
 QString Game::AppName = "TSRE5";
 
 /// EFO New Setting for default startup option
-QString Game::startapp = "r";
+QString Game::startapp;  //  = "r";
 
 bool Game::showSDL = false;
 
 QString Game::AppDataVersion = "0.697";
+QString Game::AppRepository = "https://trainsim.com/tsre/";
 QString Game::root = "";
 QString Game::route = "";
 QString Game::routeName = "";
@@ -92,11 +93,11 @@ bool Game::ignoreMissingGlobalShapes = false;
 bool Game::deleteTrWatermarks = false;
 bool Game::deleteViewDbSpheres = false;
 bool Game::createNewRoutes = false;
-bool Game::writeEnabled = false;
-bool Game::writeTDB = false;
+bool Game::writeEnabled = true;
+bool Game::writeTDB = true;
 bool Game::systemTheme = false;
 bool Game::toolsHidden = false;
-bool Game::usenNumPad = false;
+bool Game::usenNumPad = true;
 float Game::cameraFov = 55.0f;
 float Game::cameraSpeedMin = 1.0;
 float Game::cameraSpeedStd = 3.0;
@@ -116,14 +117,14 @@ bool Game::viewPointer3d = true;
 bool Game::viewMarkers = false;
 bool Game::viewSnapable = false;
 bool Game::viewCompass = false;
-bool Game::warningBox = false;
+bool Game::warningBox = true;
 bool Game::leaveTrackShapeAfterDelete = false;
 bool Game::renderTrItems = false;
 int Game::newRouteX = -5000;
 int Game::newRouteZ = 15000;
 
-bool Game::consoleOutput = false;
-int Game::fpsLimit = 0;
+bool Game::consoleOutput = true;
+int Game::fpsLimit = 59;
 bool Game::ortsEngEnable = true;
 bool Game::sortTileObjects = true;
 int Game::oglDefaultLineWidth = 1;
@@ -156,8 +157,9 @@ ShapeLib *Game::currentShapeLib = NULL;
 EngLib *Game::currentEngLib = NULL;
 Route *Game::currentRoute = NULL;
 GameObj *Game::currentSelectedGameObj = NULL;
-QColor *Game::colorConView = NULL;
-QColor *Game::colorShapeView = NULL;
+
+QColor *Game::colorConView = new QColor("#a2a2a2");
+QColor *Game::colorShapeView = new QColor("#a2a2a2");
 
 QString Game::StyleMainLabel = "#770000";
 QString Game::StyleGreenButton = "#55FF55";
@@ -167,6 +169,8 @@ QString Game::StyleGreenText = "#009900";
 QString Game::StyleRedText = "#990000";
 
 QString Game::imageMapsUrl;
+QString Game::mapEngine;
+
 int Game::mapImageResolution = 4096;
 
 bool Game::autoNewTiles = false;
@@ -187,7 +191,7 @@ float Game::shadow2Res = 4000.0;
 float Game::shadow2Bias = 0.002;
 //float fogColor[4]{0.5, 0.75, 1.0, 1.0};
 float Game::fogColor[4] = {230.0/255.0,248.0/255,255.0/255.0, 1.0};
-float Game::skyColor[4] = {230.0/255.0,248.0/255,255.0/255.0, 1.0};
+float Game::skyColor[4] = {224.0/255.0,255.0/255,255.0/255.0, 1.0};
 
 int Game::DefaultElevationBox = 0;
 float Game::DefaultMoveStep = 0.25;
@@ -216,7 +220,7 @@ QString Game::mainPos;   /// EFO Null handling exists
 QString Game::statusPos;  /// EFO Null handling exists
 QString Game::naviPos;  /// EFO Null handling exists
 
-bool  Game::debugOutput = false;
+bool  Game::debugOutput = true;
 bool  Game::legacySupport = false; 
 bool  Game::newSymbols = true;
 int   Game::pointerIn = 4;
@@ -242,7 +246,16 @@ float Game::lastElev = 0.0;
 float Game::sigOffset = 0;
 QStringList Game::markerFiles;
 bool Game::reload;
+
 QString Game::MapAPIKey = "";
+QString Game::GoogleImageMapURL = "http://maps.googleapis.com/maps/api/staticmap?center={lat},{lon}&zoom={zoom}&size={res}x{res}&maptype=satellite&key=";
+QString Game::GoogleAPIKey = "";
+int Game::GoogleImageMapsZoomOffset = 0;        
+QString Game::MapBoxImageMapURL = "https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/{lon},{lat},{zoom}/{res}x{res}?access_token=";
+int Game::MapBoxImageMapsZoomOffset = -1;        
+QString Game::MapBoxAPIKey = "";
+
+
 bool Game::imageSubstitution = true;
 bool Game::imageUpgrade = true;
 QString Game::includeFolder = "openrails";
@@ -278,7 +291,6 @@ QHash<QString, int> Game::TextureFlags {
         {"underground", 0x40000000}
     };
 
-    
 QStringList getFilesInDirectory(const QString& directoryPath) {
     QDir directory(directoryPath);
 
@@ -344,9 +356,10 @@ void Game::load() {
     
     if (!file.exists()){
         qDebug() << "creating new settings file";
-        ////  CreateNewSettingsFile();   /// EFO replacing this with SettingsDialog's new create 
+//        CreateNewSettingsFile();   /// EFO replacing this with SettingsDialog's new create 
+/// EFO Rollback        
         SettingsDialog* diag = new SettingsDialog(nullptr); // Create the object
-        diag->loadSettings();                               // Populate the maps from current settings.txt
+       diag->loadSettings();                               // Populate the maps from current settings.txt
         diag->save(path);                                   // Execute the save to your new path
         delete diag;                                        // Clean up memory
     }
@@ -425,15 +438,17 @@ void Game::load() {
             if(setname =="routename")
                 route = setval;
 
-            if(setname =="starttilex"){
-                Game::start++;
-                startTileX = setval.toInt();
-            }
-            if(setname =="starttiley"){
-                Game::start++;
-                startTileY = setval.toInt();
-            }                        
 
+            if (setname == "starttilex") {
+                    Game::start++;
+                    startTileX = setval.toInt();
+            }
+
+            if (setname == "starttiley") {
+                    Game::start++;
+                    startTileY = setval.toInt();
+            }                
+                
             if(setname =="writeenabled"){
                 if((setval == "true") or (setval == "1") or (setval == "on"))
                     writeEnabled = true;
@@ -737,8 +752,11 @@ void Game::load() {
         if(setname =="geopath")
             geoPath = setval;
         
+        
+        
         if(setname =="colorconview")
             colorConView = new QColor(setval);
+        
         if(setname =="colorshapeview")
             colorShapeView = new QColor(setval);
         
@@ -807,6 +825,9 @@ void Game::load() {
             imageMapsZoomOffset = setval.toInt();
         }
         
+        if(setname =="mapengine"){
+            mapEngine = args[1].trimmed();
+        }        
         
         
         if(setname =="mapimageresolution"){
@@ -1094,16 +1115,23 @@ void Game::load() {
                  UnsafeMode = false;
         }           
         
+
+
         
         ///////// These are unpublished settings ///////////////
 
+       
+        if(setname == "apprepository"){
+                 AppRepository = setval;
+        }       
+        
+        
         if(setname == "extendeddebug"){
              if((setval == "true") or (setval == "1") or (setval == "on"))
                  extendedDebug = true;
             else
                  extendedDebug = false;
         }       
-
         
         if(setname == "wfhuser"){
              if((setval == "true") or (setval == "1") or (setval == "on"))
@@ -1317,7 +1345,14 @@ template void Game::check_coords(int& x, int& z, int& px, int& pz);
 template void Game::check_coords(int& x, int& z, float& px, float& pz);
 template void Game::check_coords(float& x, float& z, float& px, float& pz);
 
-void Game::CreateNewSettingsFile(){
+void Game::CreateNewSettingsFile()
+    ////////////////////////////////////////////////////////////////////
+    //                                                                //
+    //    THIS is now obsolete and replaced by SettingsDialog::save   //
+    //                                                                //
+    ////////////////////////////////////////////////////////////////////            
+    {
+    
     QFile file;
     QTextStream out;
     QString filepath;
@@ -1500,6 +1535,7 @@ void Game::CheckForOpenAl(){
     
 #ifdef Q_PROCESSOR_X86_64
     openalfilename = "OpenAL32.dll";
+    
     Url = "http://koniec.org/tsre5/data/openal/Win64/soft_oal.dll";
 #endif
 
@@ -1533,7 +1569,9 @@ void Game::DownloadAppData(QString path){
     // Download and extract AppData
     QNetworkAccessManager* mgr = new QNetworkAccessManager();
     qDebug() << "Wait ..";
-    QString Url = "http://koniec.org/tsre5/data/appdata/"+ Game::AppDataVersion + ".tar";
+    
+    QString Url = AppRepository + "data/appdata/" +  Game::AppDataVersion + ".tar";
+    // QString Url = "http://koniec.org/tsre5/data/appdata/"+ Game::AppDataVersion + ".tar";
     qDebug() << Url;
     QNetworkRequest req;//(QUrl(Url));
     req.setUrl(QUrl(Url));
@@ -1548,6 +1586,54 @@ void Game::DownloadAppData(QString path){
     FileBuffer *fileData = new FileBuffer((unsigned char*)data.data(), data.length());
     TarFile tarFile(fileData);
     tarFile.extractTo("./tsre_appdata/");
+
+    // Get additional files
+    
+    QString baseUrl = AppRepository + "data/appdata/";
+    QNetworkRequest listReq((QUrl(baseUrl)));
+    QNetworkReply* listReply = mgr->get(listReq);
+
+    QEventLoop loop2;
+    QObject::connect(listReply, &QNetworkReply::finished, &loop2, &QEventLoop::quit);
+    loop2.exec();
+
+    QString html = QString(listReply->readAll());
+
+    QRegularExpression re("<a href=\"([^\"]+)\"");
+    QRegularExpressionMatchIterator i = re.globalMatch(html);
+
+    while (i.hasNext()) {
+        QRegularExpressionMatch match = i.next();
+        QString fileName = match.captured(1);
+
+        // Filter: No subfolders (contain /), no tars, and skip parent directory links
+        if (!fileName.contains("/") && !fileName.endsWith(".tar") && !fileName.contains("?")) {
+
+            qDebug() << "Downloading:" << fileName;
+
+            QNetworkRequest downloadReq(QUrl(baseUrl + fileName));
+            QNetworkReply* downloadReply = mgr->get(downloadReq);
+
+            // Wait for download
+            QEventLoop downloadLoop;
+            QObject::connect(downloadReply, &QNetworkReply::finished, &downloadLoop, &QEventLoop::quit);
+            downloadLoop.exec();
+
+            if (downloadReply->error() == QNetworkReply::NoError) {
+                QByteArray fileData = downloadReply->readAll();
+
+                // Save to disk
+                QFile localFile("./tsre_appdata/" + fileName);
+                if (localFile.open(QIODevice::WriteOnly)) {
+                    localFile.write(fileData);
+                    localFile.close();
+                }
+            }
+            downloadReply->deleteLater();
+        }
+    }
+    listReply->deleteLater();
+    
     
     // Create bat file for Consist Editor.
     QString conBatFile = QFileInfo(QCoreApplication::applicationFilePath()).fileName()+" --conedit";

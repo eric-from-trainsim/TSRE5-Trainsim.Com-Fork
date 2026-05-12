@@ -315,7 +315,8 @@ void LoadWindow::downloadTemplateRoute(QString path){
     // Download and extract Route Data
     QNetworkAccessManager* mgr = new QNetworkAccessManager();
     qDebug() << "Wait ..";
-    QString Url = "http://koniec.org/tsre5/data/appdata/templateRoute_0.6.tar";
+//    QString Url = "http://koniec.org/tsre5/data/appdata/templateRoute_0.6.tar";
+    QString Url = Game::AppRepository + "data/appdata/templateRoute_0.6.tar";
     qDebug() << Url;
     QNetworkRequest req;
     req.setUrl(QUrl(Url));

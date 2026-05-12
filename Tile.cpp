@@ -280,7 +280,7 @@ void Tile::load() {
     QString path;
     path = Game::root + "/routes/" + Game::route + "/world/w" + getNameXY(x) + "" + getNameXY(-z) + ".w";
     path.replace("//", "/");
-    
+    if(Game::extendedDebug) qDebug() << "tile283";
     QFile *file = new QFile(path);
     if (!file->open(QIODevice::ReadOnly)){
         if(Game::debugOutput) qDebug() << "W file: not exist " << path;

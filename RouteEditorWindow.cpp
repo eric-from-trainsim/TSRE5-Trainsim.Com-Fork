@@ -1043,6 +1043,7 @@ void RouteEditorWindow::showRoute(){
         }
         show();
     } else {
+            if(Game::extendedDebug) qDebug() << "REW1046";
         QObject::connect(glWidget, SIGNAL(showWindow()), this, SLOT(show()));
         glWidget->initRoute();
     }
@@ -1052,7 +1053,7 @@ void RouteEditorWindow::showRoute(){
 void RouteEditorWindow::show(){
 //    naviWindow->move(0,800);
 //    statusWindow->move(0,500);
-    
+    if(Game::extendedDebug) qDebug() << "REW1056";
     if(!Game::playerMode){
         naviWindow->show();
         QStringList winPos = Game::naviPos.split(","); 

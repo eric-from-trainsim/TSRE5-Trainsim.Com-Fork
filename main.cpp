@@ -18,6 +18,7 @@
 #include <QColor>
 #include <QStringList>
 #include <iostream>
+#include "Launcher.h"
 #include "Game.h"
 #include "RouteEditorWindow.h"
 #include "LoadWindow.h"
@@ -27,6 +28,7 @@
 #include "RouteEditorServer.h"
 #include "RouteEditorClient.h"
 #include "Undo.h"
+#include "SettingsDialog.h"
 
 QFile logFile;
 QTextStream logFileOut;
@@ -77,7 +79,7 @@ void LoadConEditor(){
 
 void LoadShapeViewer(QString arg){
     ShapeViewerWindow* shapeWindow = new ShapeViewerWindow();
-    if(arg.length() > 0)
+    if(arg.trimmed().length() > 0)
         shapeWindow->loadFile(arg);
 
         //// EFO Try to keep window on main window:
@@ -107,8 +109,9 @@ void LoadShapeViewer(QString arg){
 }
 
 void LoadRouteEditor(){
-    
-    if(Game::serverLogin.length() > 0)
+
+/*
+    if(Game::serverLogin.trimmed().length() > 0)
         Game::ServerMode = true;
     
     if(Game::ServerMode){
@@ -117,7 +120,8 @@ void LoadRouteEditor(){
         // Create Server Client
         Game::serverClient = new RouteEditorClient();
     }
-
+  */  
+    
     RouteEditorWindow *window = new RouteEditorWindow();
     if(Game::fullscreen){
         window->setWindowFlags(Qt::CustomizeWindowHint);
@@ -467,7 +471,22 @@ int main(int argc, char *argv[]){
         RunRouteEditorServer();
         return app.exec();
     }
-        
+     
+    
+///INSERTHERE
+    if (Game::startapp.isEmpty()) {
+        Game::startapp = Launcher::getSelection();
+    }
+
+
+    if (Game::startapp == "m") {
+        Game::startapp = Launcher::getSelection();
+    }
+
+    if (Game::startapp == "z") {
+        return 0; // Exit the application immediately
+    }   
+    
     /// EFO New Setting 
     if(Game::startapp.contains("c")) 
         LoadConEditor();
@@ -475,7 +494,23 @@ int main(int argc, char *argv[]){
         LoadShapeViewer("");
     else if(Game::startapp.contains("r")) 
         LoadRouteEditor();   
-    else LoadRouteEditor();
+else if (Game::startapp.contains("x")) {
+        // 1. Instantiate the Settings Dialog
+        SettingsDialog *diag = new SettingsDialog();
+
+        // 2. Set window flags to make it a standard top-level window
+        diag->setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+        diag->setWindowTitle("TSRE Settings Editor");
+
+        // 3. Use exec() to show it modally as a standalone window.
+        // This blocks execution here until the window is closed.
+        diag->exec();
+
+        // 4. Once closed, exit the application immediately
+        qDebug() << "Settings closed. Exiting application.";
+        return 0; 
+
+    }    else LoadRouteEditor();
     
     // LoadConEditor();
 
