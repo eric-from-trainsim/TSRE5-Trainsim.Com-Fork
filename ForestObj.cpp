@@ -477,7 +477,8 @@ void ForestObj::drawShape(){
             if(Game::TextureFlags["snow"] != 0)
                 seasonPath = "/snow";
         }
-                        
+
+        if(Game::seasonalEditing == false) seasonPath = "";
         texturePath = new QString(resPath.toLower() + seasonPath +"/"+treeTexture.toLower());
         shape.setMaterial(texturePath);
         shape.init(punkty, ptr, RenderItem::VNTA, GL_TRIANGLES);

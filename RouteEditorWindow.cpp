@@ -674,12 +674,31 @@ void RouteEditorWindow::closeEvent(QCloseEvent * event ){
     if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&file);
         QStringList sortedFileList = Route::missingList;
+        sortedFileList.removeDuplicates();
         sortedFileList.sort();
         for (const QString& fileName : sortedFileList) {
             out << fileName << " \n";
         }
         file.close();        
     }      
+    
+    QString dirpath = (Game::root + "/routes/" + Game::routeName + "/").toLower();
+    QFile file2("./" + Game::route + "_missingTextures.txt");    
+
+    if (file2.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file2);
+        QStringList sortedFileList2 = Route::missingTex;
+        sortedFileList2.removeDuplicates(); 
+        sortedFileList2.sort();
+
+        for (const QString& fileName : sortedFileList2) {
+            // Create a copy so we don't destroy the original list data
+            QString shortfilename = fileName; 
+            shortfilename = shortfilename.remove(dirpath, Qt::CaseInsensitive);
+            out << shortfilename << "\n";
+        }
+        file2.close();        
+    }    
 /*
     QFile file2("./" + Game::route + "_texturesUsed.txt");    
     if (file2.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -1043,7 +1062,7 @@ void RouteEditorWindow::showRoute(){
         }
         show();
     } else {
-            if(Game::extendedDebug) qDebug() << "REW1046";
+            if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]";
         QObject::connect(glWidget, SIGNAL(showWindow()), this, SLOT(show()));
         glWidget->initRoute();
     }
@@ -1053,7 +1072,7 @@ void RouteEditorWindow::showRoute(){
 void RouteEditorWindow::show(){
 //    naviWindow->move(0,800);
 //    statusWindow->move(0,500);
-    if(Game::extendedDebug) qDebug() << "REW1056";
+    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]";
     if(!Game::playerMode){
         naviWindow->show();
         QStringList winPos = Game::naviPos.split(","); 

@@ -41,6 +41,7 @@ build/Release_x64/MinGW_64b-Windows/CoordsMkr.o
 build/Release_x64/MinGW_64b-Windows/CoordsRoutePlaces.o
 build/Release_x64/MinGW_64b-Windows/DynTrackObj.o
 build/Release_x64/MinGW_64b-Windows/CrossoverObj.o
+build/Release_x64/MinGW_64b-Windows/Launcher.o
 build/Release_x64/MinGW_64b-Windows/PolyForestObj.o
 build/Release_x64/MinGW_64b-Windows/PropertiesHazard.o
 build/Release_x64/MinGW_64b-Windows/PropertiesPolyForest.o

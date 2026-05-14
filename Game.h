@@ -252,6 +252,7 @@ public:
     static bool CheckBraces;
     static bool UnsafeMode;
     static bool extendedDebug;
+    static bool routeMergeEnabled;    
     static bool routeMergeTerrain;
     static bool routeMergeTDB;
     static bool routeMergeTerrtex;    

@@ -20,6 +20,7 @@
 #include <QDebug>
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
+    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]";
     setWindowTitle("TSRE5 Settings Editor");
     resize(1100, 850);
     setupUi();
@@ -181,6 +182,7 @@ void SettingsDialog::setupUi() {
     addRow(l, "useWorkingDir", "bool", "Use Working Dir", "False saves logs to TSRE app folder");
     addRow(l, "warningBox", "bool", "Warning Box", "Warn before exiting without save");
     addRow(l, "appRepository", "string", "appRepository", "Location of data not included in executable");
+    addRow(l, "extendedDebug", "bool", "Trace Debugging", "Only use to diagnose crashes as this will fill your logs immensely");
 
     createScrollTab(l, tabs, "Route Editor");
     addRow(l, "gameRoot", "dir", "Game Root", "Your ORTS Content drive/folder");
@@ -294,10 +296,11 @@ void SettingsDialog::setupUi() {
     addRow(l, "startTileY", "number", "Start Tile Y", "Must be valid tile within route or editor may crash", true);
     addRow(l, "unsafemode", "bool", "Unsafe Mode", "Only for risky features", true);
     addRow(l, "routeRebuildTDB", "bool", "Route Rebuild TDB", "", true);
+    addRow(l, "routeMergeEnabled", "bool", "Route Merge Enable", "Must turn on to enable merge subfunctions", true);    
     addRow(l, "routeMergeString", "string", "Route Merge String", "e.g. IRM:0:0:0", true);
-    addRow(l, "routeMergeTDB", "bool", "Route Merge TDB", "", true);
-    addRow(l, "routeMergeTerrain", "bool", "Route Merge Terrain", "", true);
-    addRow(l, "routeMergeTerrtex", "bool", "Route Merge Terrtex", "", true);
+    addRow(l, "routeMergeTDB", "bool", "Route Merge TDB", "false brings tracks and road without TDB/RDB entries", true);
+    addRow(l, "routeMergeTerrain", "bool", "Route Merge Terrain", "false skips bringing in elevation mapping", true);
+    addRow(l, "routeMergeTerrtex", "bool", "Route Merge Terrtex", "false skips bringing in terrain textures", true);
 
     
     QLabel* instrLabel = new QLabel("Settings can be updated but will not be applied while application is running. Save your settings, and relaunch the application to apply your changes.", this);
@@ -340,11 +343,9 @@ void SettingsDialog::save(const QString& filename) {
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return;
     QTextStream out(&file);
     out << "# TSRE5 " << Game::AppVersion << " Settings File\n\n";
-    QMapIterator<QString, QWidget*> i(valueWidgetMap);
-    while (i.hasNext()) {
-        i.next();
-        QString key = i.key();
-        QWidget* w = i.value();
+
+    // Helper lambda to process and write a specific key to the stream
+    auto writeKey = [&](const QString& key, QWidget* w) {
         QString valStr;
         if (subValueWidgetMap.contains(key)) {
             QLineEdit* primary = qobject_cast<QLineEdit*>(w);
@@ -360,17 +361,34 @@ void SettingsDialog::save(const QString& filename) {
         } else if (QTextEdit* te = qobject_cast<QTextEdit*>(w)) {
             valStr = te->toPlainText().replace("\n", ",").trimmed();
         }
+
         QString finalKey = key;
         if (dangerousCheckboxMap.contains(key) && !dangerousCheckboxMap[key]->isChecked()) {
             finalKey = "## " + key;
         }
         out << finalKey << " = " << valStr << "\n";
+    };
+
+    // First Pass: Output keys containing "debug"
+    QMapIterator<QString, QWidget*> i(valueWidgetMap);
+    while (i.hasNext()) {
+        i.next();
+        if (i.key().contains("debug", Qt::CaseInsensitive)) {
+            writeKey(i.key(), i.value());
+        }
     }
+
+    // Second Pass: Output all other keys
+    i.toFront(); // Reset iterator
+    while (i.hasNext()) {
+        i.next();
+        if (!i.key().contains("debug", Qt::CaseInsensitive)) {
+            writeKey(i.key(), i.value());
+        }
+    }
+
     file.close();
-    /// accept();   /// leave the dialog open
 }
-
-
 
 
 
@@ -485,6 +503,7 @@ QString SettingsDialog::getGameValue(const QString& key) {
         if (key == "defaultmovestep") return QString::number(Game::DefaultMoveStep);
         if (key == "deletetrwatermarks") return Game::deleteTrWatermarks ? "true" : "false";
         if (key == "deleteviewdbspheres") return Game::deleteViewDbSpheres ? "true" : "false";
+        if (key == "extendeddebug") return Game::extendedDebug ? "true" : "false";
         if (key == "fpslimit") return QString::number(Game::fpsLimit);
         if (key == "fullscreen") return Game::fullscreen ? "true" : "false";
         
@@ -539,6 +558,7 @@ QString SettingsDialog::getGameValue(const QString& key) {
         if (key == "proceduraltracks") return Game::proceduralTracks ? "true" : "false";
         if (key == "railprofile") return QString("%1, %2").arg(Game::railProfile[0]).arg(Game::railProfile[1]);
         if (key == "rendertritems") return Game::renderTrItems ? "true" : "false";
+        if (key == "routemergeenabled") return Game::routeMergeEnabled ? "true" : "false";
         if (key == "routemergestring") return Game::routeMergeString;
         if (key == "routemergetdb") return Game::routeMergeTDB ? "true" : "false";
         if (key == "routemergeterrain") return Game::routeMergeTerrain ? "true" : "false";

@@ -844,7 +844,7 @@ void TerrainTools::texPreviewEnabled(int val){
         nextBrushShape();
         return;
     }
-    // qDebug() << "TerrTools 829:" << val ;
+    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << val ;
     int idx = texLastItems.size() - val - 1;
     if(idx > texLastItems.size() - 1) return;
     if(idx < 0) return;

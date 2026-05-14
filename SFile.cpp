@@ -79,7 +79,7 @@ void SFile::load() {
         int stringpos = pathid.lastIndexOf("/") + 1;
         int stringsub = pathid.length() - stringpos;
         QString shortpath = pathid.mid(stringpos,stringsub); 
-        // qDebug() << "shortpath = " << shortpath;
+        if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "shortpath = " << shortpath;
         Route::missingList.append(shortpath);
         file->close();
         return;
@@ -617,6 +617,8 @@ void SFile::loadSd() {
         if(esdAlternativeTexture & Game::TextureFlags["snowtrack"] != 0)
             seasonPath = "/snow";
     }
+    
+    if(Game::seasonalEditing == false) seasonPath = "";    
     texPath += seasonPath;
     loadedSd = true;
     delete data;
@@ -1332,6 +1334,7 @@ void SFile::fillShapeTextureInfo(QHash<int, ShapeTextureInfo*>& list, unsigned i
             if(ttex->missing){
                 tInfo->loaded = "MISSING";
                 qWarning() << "Missing Texture: " << tInfo->textureName;
+                Route::missingTex.append(tInfo->textureName);                
                 continue;
             }
             if(ttex->error){

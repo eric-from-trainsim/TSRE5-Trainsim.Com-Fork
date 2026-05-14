@@ -508,7 +508,8 @@ void WorldObj::set(int sh, FileBuffer* data) {
         // 4byte undefined data
         return;
     }
-     if (Game::extendedDebug = true)  qDebug() << "worldObj "<<this->type<<" unknown: " << sh;
+    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "worldObj "<<this->type<<" unknown: " << sh;
+    
     return;
 }
 
@@ -575,7 +576,7 @@ void WorldObj::set(QString sh, FileBuffer* data) {
         templateName = ParserX::GetStringInside(data);
         return;
     }
-     if (Game::extendedDebug = true)  qDebug() << "worldObj "<<this->type<<" unknown: " << sh;
+     if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "worldObj "<<this->type<<" unknown: " << sh;
     return;
 }
 

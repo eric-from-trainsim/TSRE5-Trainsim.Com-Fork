@@ -78,6 +78,7 @@ void Terrain::load(){
             seasonPath = "snow/";
     }
     
+    if(Game::seasonalEditing == false) seasonPath = "";
     
     texturepath = Game::root + "/routes/" + Game::route + "/terrtex/"+seasonPath;
     rootTexturepath = Game::root + "/routes/" + Game::route + "/terrtex/";

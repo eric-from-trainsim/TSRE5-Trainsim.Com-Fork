@@ -360,6 +360,7 @@ void TransferObj::drawShape(int selectionColor){
                 seasonPath = "snow/";
         }
         
+        if(Game::seasonalEditing == false) seasonPath = "";
         texturePath = new QString(resPath.toLower()+"/"+seasonPath+texture.toLower());
         shape.setMaterial(texturePath);
         shape.init(punkty, ptr, RenderItem::VNTA, GL_TRIANGLES);

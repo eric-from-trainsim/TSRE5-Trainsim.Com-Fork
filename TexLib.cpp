@@ -110,6 +110,7 @@ int TexLib::addTex(QString pathid, bool reload) {
         if (!file.exists() && (tType == "ace" || tType == "dds"))
         {
             qWarning() << "Missing texture: " << pathid.toLower();
+            Route::missingTex.append(pathid.toLower());
         }
     /// EFO there's no good reason to swap DDS and ACE files... 
     /// This allows it to be done, default is NOT to

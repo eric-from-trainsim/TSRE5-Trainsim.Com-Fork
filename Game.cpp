@@ -126,7 +126,7 @@ int Game::newRouteZ = 15000;
 bool Game::consoleOutput = true;
 int Game::fpsLimit = 59;
 bool Game::ortsEngEnable = true;
-bool Game::sortTileObjects = true;
+bool Game::sortTileObjects = FALSE;
 int Game::oglDefaultLineWidth = 1;
 bool Game::showWorldObjPivotPoints = false;
 int Game::shadowMapSize = 2048;
@@ -220,7 +220,7 @@ QString Game::mainPos;   /// EFO Null handling exists
 QString Game::statusPos;  /// EFO Null handling exists
 QString Game::naviPos;  /// EFO Null handling exists
 
-bool  Game::debugOutput = true;
+bool  Game::debugOutput = true;  /// this can be overridden later
 bool  Game::legacySupport = false; 
 bool  Game::newSymbols = true;
 int   Game::pointerIn = 4;
@@ -270,6 +270,7 @@ bool Game::resetTools = false;
 bool Game::CheckBraces = false;
 bool Game::UnsafeMode = false;
 bool Game::extendedDebug = false;
+bool Game::routeMergeEnabled = false;
 bool Game::routeMergeTerrain = false;
 bool Game::routeMergeTDB = false;
 bool Game::routeMergeTerrtex = false;
@@ -312,7 +313,7 @@ QStringList getFilesInDirectory(const QString& directoryPath) {
     
 void Game::InitAssets() {
     QString path;
-    bool newInstallation = false;
+    //bool newInstallation = false;
     path = "./tsre_assets/";
     QFile appFile3(path);
     if (!appFile3.exists()){
@@ -323,7 +324,7 @@ void Game::InitAssets() {
     
     QFile appFile1(path);
     if (!appFile1.exists()){
-        newInstallation = true;
+        //newInstallation = true;
         QMessageBox msgBox;
         msgBox.setWindowTitle("TSRE");
         msgBox.setText("Welcome in TSRE!\n\nThis is experimental version.\nUsing it may seriously damage your data."
@@ -369,8 +370,6 @@ void Game::load() {
         return;
     }
     
-    if(Game::debugOutput) qDebug() << path;
-
     QTextStream in(&file);
     in.setCodec("UTF-8");
     QString line;
@@ -379,7 +378,6 @@ void Game::load() {
     QString setname; 
     QString skipped;   // save what's being skipped for output later
 
-    qDebug() << "Debug: " << Game::debugOutput;
     
     if(Game::reload) qDebug() << "Limited Reload In Progress";
     
@@ -395,8 +393,7 @@ void Game::load() {
         }
        
        // EFO Main comment stripper
-       if(line.startsWith("#", Qt::CaseInsensitive)) {  if(Game::debugOutput) qDebug() << "Skip#   : " << skipped;  ; continue;}
-       if(line.startsWith("//", Qt::CaseInsensitive)){  if(Game::debugOutput) qDebug() << "Skip  //: " << skipped; ; continue;}
+       if(line.startsWith(("#", Qt::CaseInsensitive)) or (line.startsWith("//", Qt::CaseInsensitive))) {  if(Game::debugOutput) qDebug() << "Skip#   : " << line;  ; continue;}
         
         //args = line.split("=");
         args.clear();
@@ -404,8 +401,6 @@ void Game::load() {
         args.push_back(line.section('=', 1));
         
         //if(Game::debugOutput) qDebug() << args[0] << args[1];
-        
-        
         
         if(args.count() < 2) continue;
         setname = args[0].trimmed().toLower();       
@@ -416,9 +411,6 @@ void Game::load() {
         
         if(setname.length()==0) continue;
         
-        if(Game::debugOutput) qDebug() << "Args    : " << args[0].trimmed() << " "<< args[1].trimmed();
-        if(Game::debugOutput) qDebug() << "Sets    : " << setname << "=" << setval;        
-
 /*
  
  
@@ -427,7 +419,17 @@ void Game::load() {
  
  
  
- */
+
+ *  */
+        if(Game::extendedDebug) 
+        {
+            qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << setname << " --> " << setval;        
+        }else if (Game::debugOutput) 
+        {
+            qDebug() << "Args    : " << args[0].trimmed() << " "<< args[1].trimmed() << "/n" << "Sets    : " << setname << "=" << setval;        
+        }
+            
+
         
         //// These are protected and should never be reloaded
         if(Game::reload == false)
@@ -559,7 +561,7 @@ void Game::load() {
                     useOnlyPositiveQuaternions = false; 
             }
             if(setname =="routemergestring")
-                routeMergeString = args[1]; 
+                routeMergeString = args[1].trimmed(); 
             
             
             if(setname =="serverlogin"){
@@ -593,7 +595,15 @@ void Game::load() {
             if(setname == "sigoffset"){
                 sigOffset = setval.toFloat();
             }
+            
+            if(setname =="routemergeenabled"){
+                if((setval == "true") or (setval == "1") or (setval == "on"))
+                    routeMergeEnabled = true;
+                else
+                    routeMergeEnabled = false; 
+            }
 
+            
             if(setname =="routemergeterrain"){
                 if((setval == "true") or (setval == "1") or (setval == "on"))
                     routeMergeTerrain = true;
@@ -1088,14 +1098,14 @@ void Game::load() {
                        
         if(setname == "objectstoremove" ) 
             {
-              // qDebug() << "Removal Found";
+              if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "Removal Found" << setval;
               objectsToRemove = setval.split(",") ;
               qDebug() << "Removal objects found: " << objectsToRemove.size();              
             }
 
         if(setname == "preloadtextures" ) 
             {
-              // qDebug() << "Removal Found";
+              if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "Prelod Found" << setval;
               preloadTextures = setval.split(",") ;
             }
                 
@@ -1150,10 +1160,8 @@ void Game::load() {
         }
 
         
-        if(Game::debugOutput) qDebug() << "Skip: " << skipped;
-        skipped.clear();               
         
-    // qDebug() << setname << " --> " << setval;        
+        skipped.clear();               
     
         
     }
@@ -1162,11 +1170,11 @@ void Game::load() {
     
     cleanupLogs();
 
-    if(Game::seasonalEditing)
+    if(Game::seasonalEditing == true)
     {
         QMessageBox infobox;        
         infobox.setWindowTitle("Seasonal Editing On");
-        infobox.setInformativeText("If you plan to do terrain painting, exit TSRE, open up your \"Settings.txt\" file, and comment out seasonal editing or set it to false.\n\n Terrain painting, auto-paint, and some shapes may not render correctly with seasonal editing turned on.");
+        infobox.setInformativeText("Terrain painting, auto-paint, and some shapes may not render correctly with seasonal editing turned on. \n\nIf you plan to do terrain painting, edit your Settings and set \"Seasonal Editing\" to false, and restart TSRE.");
         infobox.setFixedWidth(150);
         infobox.exec();
     }

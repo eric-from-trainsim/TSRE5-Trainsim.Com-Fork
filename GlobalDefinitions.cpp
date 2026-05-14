@@ -7,7 +7,6 @@
  *
  *  See LICENSE.md or https://www.gnu.org/licenses/gpl.html
  */
-
 #include "GlobalDefinitions.h"
 
 GlobalDefinitions::GlobalDefinitions() {

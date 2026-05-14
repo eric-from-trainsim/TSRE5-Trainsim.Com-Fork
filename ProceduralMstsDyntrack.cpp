@@ -709,7 +709,7 @@ void ProceduralMstsDyntrack::GenShape(QVector<OglObj*> &shape, QVector<TSection>
     
     QString resPath = Game::root + "/routes/" + Game::route + "/textures";
     QString seasonPath = "";    
-    if(Game::seasonalEditing)
+    if(Game::seasonalEditing == true)
     {
         
         /// EFO block to grab season path and render snow
@@ -728,7 +728,7 @@ void ProceduralMstsDyntrack::GenShape(QVector<OglObj*> &shape, QVector<TSection>
         /// end EFO block to grab season path and render snow                        
     }
     
-    
+
     QString* texturePath = new QString(resPath.toLower() + seasonPath + "/acleantrack1.ace");  // EFO added seasonPath
     shape.push_back(new OglObj());
     shape.push_back(new OglObj());

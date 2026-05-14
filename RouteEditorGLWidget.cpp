@@ -247,13 +247,13 @@ void RouteEditorGLWidget::initRoute2(){
     if(Game::ActivityToPlay.length() > 0){
         playInit();
     }
-    qDebug() << "REGL250";
+    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << " routeLoaded";
     emit routeLoaded(route);
-    qDebug() << "REGL252";
+    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << " show window";
     emit showWindow();  
-    qDebug() << "REGL254";
+    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << " preload textures";
     emit preloadTexturesSignal();
-    qDebug() << "REGL256";
+    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << " complete";
     
     return;
 }
@@ -343,7 +343,7 @@ void RouteEditorGLWidget::initializeGL() {
 
     lastTime = QDateTime::currentMSecsSinceEpoch();
     
-    if(Game::extendedDebug) qDebug() << "REGLW346";
+    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]";
     int timerStep = 15;
     if (Game::fpsLimit > 0)
         timerStep = 1000 / Game::fpsLimit;
@@ -379,7 +379,7 @@ void RouteEditorGLWidget::initializeGL() {
     
     //emit routeLoaded(route);
     emit mkrList(route->getMkrList());
-    if(Game::extendedDebug) qDebug() << "REGLW383";    
+    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]";
     gluu->makeShadowFramebuffer(FramebufferName1, depthTexture1, Game::shadowMapSize, GL_TEXTURE2);
     gluu->makeShadowFramebuffer(FramebufferName2, depthTexture2, Game::shadowLowMapSize, GL_TEXTURE3);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -540,7 +540,7 @@ void RouteEditorGLWidget::paintGL(){
 }
 
 void RouteEditorGLWidget::paintGL2() {
-    if(Game::extendedDebug) qDebug() << "REGLW543";
+    // if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]";
     Game::currentShapeLib = currentShapeLib;
     if (route == NULL) return;
     if (!route->loaded) return;

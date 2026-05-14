@@ -9,6 +9,7 @@
  */
 
 #include <QDebug>
+#include <QDialog>
 #include <QFile>
 #include <QDir>
 #include "Route.h"
@@ -72,33 +73,26 @@
 #include "TerrainTools.h" // EFO
 #include <iostream>
 
-
-
 Route::Route() {
-
+    
 }
 
 /// These are static members that need to be instantiated outside of a function
-    QStringList Route::fileList ;
-    QStringList Route::trackList ;    
-    QStringList Route::shapesList ;    
-    QStringList Route::texturesList ;    
+    QStringList Route::fileList;
+    QStringList Route::trackList;    
+    QStringList Route::shapesList;    
+    QStringList Route::texturesList;    
     QStringList Route::missingList;
+    QStringList Route::missingTex;
     QStringList Route::staticFlagList;
 
-void Route::load(){
 
+void Route::load(){
     Game::currentRoute = this;
     trkName = Game::trkName;
     routeDir = Game::route;
-
-    ///  Check for Unsafe early
-    if(Game::UnsafeMode){
-        this->confirmUnsafe();
-    }
-
     
-     if(Game::debugOutput) qDebug() << "# Load Route";
+    qDebug() << "# Load Route";
     
     if(!Game::useQuadTree)
         terrainLib = new TerrainLibSimple();
@@ -109,20 +103,20 @@ void Route::load(){
     
     QFile file(Game::root + "/routes");
     if (!file.exists()){ 
-        if(Game::debugOutput)  qDebug() << "Route dir not exist " << file.fileName();
+        qDebug() << "Route dir not exist " << file.fileName();
         return;
     }
     file.setFileName(Game::root + "/global");
     if (!file.exists()){ 
-        if(Game::debugOutput) qDebug() << "Global dir not exist " << file.fileName();
+        qDebug() << "Global dir not exist " << file.fileName();
         return;
     }
 
     file.setFileName(Game::root + "/routes/" + Game::route);
     if (!file.exists()) {
-        if(Game::debugOutput) qDebug() << "Route does not exist.";
+        qDebug() << "Route does not exist.";
         if (Game::createNewRoutes) {
-            if(Game::debugOutput) qDebug() << "new Route";
+            qDebug() << "new Route";
             Route::createNew();
         }
     }
@@ -132,16 +126,16 @@ void Route::load(){
     Game::useSuperelevation = trk->tsreSuperelevation;
     
     if(trk->tsreProjection != NULL){
-        if(Game::debugOutput) qDebug() << "TSRE Geo Projection";
+        qDebug() << "TSRE Geo Projection";
         Game::GeoCoordConverter = new GeoTsreCoordinateConverter(trk->tsreProjection);
     } else {
-        if(Game::debugOutput) qDebug() << "MSTS Geo Projection";
+        qDebug() << "MSTS Geo Projection";
         Game::GeoCoordConverter = new GeoMstsCoordinateConverter();
     }
     env = new Environment(Game::root + "/routes/" + Game::route + "/ENVFILES/editor.env");
     Game::routeName = trk->routeName.toLower();
     routeName = Game::routeName;
-    if(Game::debugOutput) qDebug() << Game::routeName;
+    qDebug() << Game::routeName;
 
     this->tsection = new TSectionDAT();
     // Check Track Section Databaase
@@ -151,23 +145,17 @@ void Route::load(){
     if(Game::loadAllWFiles){
         preloadWFiles(Game::gui);
     }
-    
-    if((Game::UnsafeMode) && (Game::routeRebuildTDB)){
-        TDB::saveEmpty(true);  /// true = road
-        TDB::saveEmpty(false);  /// false = track
-        qDebug() << "TDB/RDB backed up";
-    }
 
-    
-    this->trackDB = new TDB(tsection, false); 
-    this->trackDB->loadTdb(); 
-    this->roadDB = new TDB(tsection, true); 
-    this->roadDB->loadTdb(); 
+    this->trackDB = new TDB(tsection, false);
+    this->trackDB->loadTdb();
+    this->roadDB = new TDB(tsection, true);
+    this->roadDB->loadTdb();
     Game::trackDB = this->trackDB;
-    Game::roadDB = this->roadDB;  
-    loadAddons();    
+    Game::roadDB = this->roadDB;
     
-    loadMkrList();        
+    loadAddons();
+
+    loadMkrList();
     createMkrPlaces();
     loadServices();
     loadTraffic();
@@ -181,43 +169,36 @@ void Route::load(){
     
     Game::terrainLib->loadQuadTree();
     OrtsWeatherChange::LoadList();
-    qDebug() << "184";
     ForestObj::LoadForestList();
     ForestObj::ForestClearDistance = trk->forestClearDistance;
     CarSpawnerObj::LoadCarSpawnerList();
-    //qDebug() << "188";
-    if(Game::loadAllWFiles){        
-        //qDebug() << "190";                 
-        preloadWFilesInit();        
-        //qDebug() << "192";
-        if(Game::listFiles == true)
-        {        
-            ListFiles();        
-        }        
+
+    if(Game::loadAllWFiles){
+        preloadWFilesInit();
     }
-    //qDebug() << "198";
+    
     checkRouteDatabase();
+    
     loaded = true;
     
     Vec3::set(placementAutoTranslationOffset, 0, 0, 0);
     Vec3::set(placementAutoRotationOffset, 0, 0, 0);
     
     skydome = new Skydome();
- 
-    // Route Merge. 
-    if(Game::routeMergeString.trimmed().length() > 0) { 
-        qDebug() << "route merge string: " << Game::routeMergeString.trimmed().length() << "  " << Game::routeMergeString.trimmed();
-        confirmMerge();
-    }
-    
-    qDebug() << "r211";
-    if((Game::UnsafeMode) && (Game::routeRebuildTDB)){
-        RebuildTDB();
-    }
-    qDebug() << "r215";
-    
-}
 
+    // Route Merge. 
+    if(Game::routeMergeString.length() > 0){
+        QStringList args = Game::routeMergeString.split(":");
+        if(args.size() == 4){
+            float offsetX = args[1].toFloat();
+            float offsetY = args[2].toFloat();
+            float offsetZ = args[3].toFloat();
+            mergeRoute(args[0], offsetX, offsetY, offsetZ);
+            setAsCurrentGameRoute();
+        }
+    }
+
+}
 
 void Route::load(QString name){
     if(!Game::useQuadTree)
@@ -227,18 +208,18 @@ void Route::load(QString name){
     
     QFile file(Game::root + "/routes");
     if (!file.exists()){ 
-        if(Game::debugOutput) qDebug() << "Route dir not exist " << file.fileName();
+        qDebug() << "Route dir not exist " << file.fileName();
         return;
     }
     file.setFileName(Game::root + "/global");
     if (!file.exists()){ 
-        if(Game::debugOutput) qDebug() << "Global dir not exist " << file.fileName();
+        qDebug() << "Global dir not exist " << file.fileName();
         return;
     }
 
     file.setFileName(Game::root + "/routes/" + name);
     if (!file.exists()) {
-        if(Game::debugOutput) qDebug() << "Route does not exist.";
+        qDebug() << "Route does not exist.";
         return;
     }
     Game::route = name;
@@ -260,7 +241,7 @@ void Route::load(QString name){
     env = new Environment(Game::root + "/routes/" + Game::route + "/ENVFILES/editor.env");*/
     Game::routeName = trk->routeName.toLower();
     routeName = Game::routeName;
-    // qDebug() << Game::routeName;
+    qDebug() << Game::routeName;
 
     this->tsection = new TSectionDAT();
     
@@ -327,8 +308,9 @@ void Route::mergeRoute(QString route2Name, float offsetX, float offsetY, float o
     mOffset[0] = offsetX;// (-4*2048) - 256;
     mOffset[1] = offsetY;//81.47992;
     mOffset[2] = offsetZ;//(-5*2048) + 640;
-
-
+    
+    // Merge TDB
+    qDebug() << "## Merge TDB";
     unsigned int trackNodeOffset = 0; 
     unsigned int trackItemOffset = 0;
     unsigned int roadNodeOffset = 0; 
@@ -336,18 +318,9 @@ void Route::mergeRoute(QString route2Name, float offsetX, float offsetY, float o
     QHash<unsigned int, unsigned int> fixedSectionIds;
     QHash<unsigned int, unsigned int> fixedShapeIds;
     unsigned int oldTrackNodeCount = this->trackDB->iTRnodes; 
-    unsigned int oldRoadNodeCount = this->roadDB->iTRnodes;    
-    
-    
-    if(Game::routeMergeTDB)
-    {
-        // Merge TDB
-        qDebug() << "## Merge TDB";
-        this->trackDB->mergeTDB(route2->trackDB, mOffset, trackNodeOffset, trackItemOffset, fixedSectionIds, fixedShapeIds);
-        this->roadDB->mergeTDB(route2->roadDB, mOffset, roadNodeOffset, roadItemOffset, fixedSectionIds, fixedShapeIds);
-    }
-    else
-        qDebug() << "## Merge TDB Skipped";
+    unsigned int oldRoadNodeCount = this->roadDB->iTRnodes;
+    this->trackDB->mergeTDB(route2->trackDB, mOffset, trackNodeOffset, trackItemOffset, fixedSectionIds, fixedShapeIds);
+    this->roadDB->mergeTDB(route2->roadDB, mOffset, roadNodeOffset, roadItemOffset, fixedSectionIds, fixedShapeIds);
     
     // Merge world objects
     if(gui){
@@ -362,7 +335,6 @@ void Route::mergeRoute(QString route2Name, float offsetX, float offsetY, float o
     Tile *t2Tile;
     QVector<int*> trackObjUpdates;
     int pi = 0;
-
     foreach (Tile* tTile, route2->tile){
         if(progress != NULL){
             progress->setValue((++pi));
@@ -378,9 +350,7 @@ void Route::mergeRoute(QString route2Name, float offsetX, float offsetY, float o
             WorldObj *wObj = tTile->obiekty[i];
             if(wObj == NULL) continue;
             //if(wObj->isTrackItem()) continue;
-            
-            if(Game::routeMergeTDB)  wObj->addTrackItemIdOffset(trackItemOffset, roadItemOffset);                        
-            
+            wObj->addTrackItemIdOffset(trackItemOffset, roadItemOffset);
             int x, z, uid, oldx, oldz, olduid;
             oldx = wObj->x;
             oldz = wObj->y;
@@ -407,117 +377,87 @@ void Route::mergeRoute(QString route2Name, float offsetX, float offsetY, float o
                 modifiedWorldTiles[((x)*10000 + z)] = t2Tile;
             //
             t2Tile->placeObject(wObj);
-            if(Game::routeMergeTDB == true)
-            {                
-                if(wObj->typeID == wObj->trackobj || wObj->typeID == wObj->dyntrack){
-                    int *u = new int[6];
-                    u[0] = oldx;
-                    u[1] = oldz;
-                    u[2] = olduid;
-                    u[3] = x;
-                    u[4] = z;
-                    u[5] = wObj->UiD;
-                    trackObjUpdates.push_back(u);
-                }
+            if(wObj->typeID == wObj->trackobj || wObj->typeID == wObj->dyntrack){
+                int *u = new int[6];
+                u[0] = oldx;
+                u[1] = oldz;
+                u[2] = olduid;
+                u[3] = x;
+                u[4] = z;
+                u[5] = wObj->UiD;
+                trackObjUpdates.push_back(u);
             }
         }
         
     }
     
-    /// EFO this is now settings driven
-    if(Game::routeMergeTDB == true)
-    {        
-        this->trackDB->updateUiDs(trackObjUpdates, oldTrackNodeCount);
-        this->roadDB->updateUiDs(trackObjUpdates, oldRoadNodeCount);
-    }            
+    this->trackDB->updateUiDs(trackObjUpdates, oldTrackNodeCount);
+    this->roadDB->updateUiDs(trackObjUpdates, oldRoadNodeCount);
     
     if(progress != NULL)
         delete progress;
-
     
-    if(Game::debugOutput) qDebug() << "## Create MKR Places";
+    qDebug() << "## Create MKR Places";
     createMkrPlaces();
     
     // Merge terrain
-    /// EFO this is now settings driven    
-    if(Game::routeMergeTerrain){        
-        if(gui){
-            progress = new QProgressDialog("Merging Terrain ...", "", 0, route2->tile.size() + modifiedWorldTiles.size());
-            progress->setWindowModality(Qt::WindowModal);
-            progress->setCancelButton(NULL);
-            progress->setWindowFlags(Qt::CustomizeWindowHint);
-            progress->show();
-        }
-        pi = 0;
-        qDebug() << "Load all route2 terrain tiles";
-
-        foreach (Tile* wTile, route2->tile){                  
-            if(progress != NULL){
-                progress->setValue((++pi));
-                QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
-            }
-           if (wTile == NULL) 
-               continue;
-           Terrain *t = route2->terrainLib->getTerrainByXY(wTile->x, wTile->z, true);
-           if (t == NULL)
-               qDebug() << "FAIL terrain NULL";
-           else if (!t->loaded)
-               qDebug() << "FAIL terrain not loaded";
-           else
-               if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << t->mojex << t->mojez;
-        }
+    if(gui){
+        progress = new QProgressDialog("Merging Terrain ...", "", 0, route2->tile.size() + modifiedWorldTiles.size());
+        progress->setWindowModality(Qt::WindowModal);
+        progress->setCancelButton(NULL);
+        progress->setWindowFlags(Qt::CustomizeWindowHint);
+        progress->show();
     }
-        else
-        qDebug() << "## Merge Terrain Skipped";
-
-    
-    if(Game::routeMergeTerrtex){
-        qDebug() << "copying Terrtex: ";
-        QString route2path = Game::root + "/routes/" + route2->routeName  + "/terrtex";
-        QString route1path = Game::root + "/routes/" + this->routeName + "/terrtex/";
-            FileFunctions::copyFiles(route2path, route1path  );
-           // qDebug() << "copying Terrtex: " << route2path << " to " << route1path;
+    pi = 0;
+    qDebug() << "Load all route2 terrain tiles";
+    foreach (Tile* wTile, route2->tile){
+        if(progress != NULL){
+            progress->setValue((++pi));
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+        }
+       if (wTile == NULL) 
+           continue;
+       Terrain *t = route2->terrainLib->getTerrainByXY(wTile->x, wTile->z, true);
+       if (t == NULL)
+           qDebug() << "FAIL terrain NULL";
+       else if (!t->loaded)
+           qDebug() << "FAIL terrain not loaded";
+       else
+           qDebug() << t->mojex << t->mojez;
     }
-        else
-        qDebug() << "## Merge TerrTex Skipped";
-
     
     setAsCurrentGameRoute();
-
-    /// EFO this is now settings driven    
-    if(Game::routeMergeTerrain){        
-        qDebug() << "Fill Terrain data";
-        Terrain *tTile;
-        foreach (Tile* wTile, modifiedWorldTiles){
-            if(progress != NULL){
-                progress->setValue((++pi));
-                QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
-            }
-            if (wTile == NULL) 
-                continue;
-            tTile = terrainLib->getTerrainByXY(wTile->x, wTile->z, false);
-            if(tTile == NULL){
-                terrainLib->saveEmpty(wTile->x, -wTile->z);
-                if(!terrainLib->reload(wTile->x, wTile->z)){
-                    qDebug() << "reload terrain fail";
-                }
-                tTile = terrainLib->getTerrainByXY(wTile->x, wTile->z, false);
-
-            }
-            if (!tTile->loaded)
-               qDebug() << "FAIL main terrain not loaded";
-
-            qDebug() << "fill";
-            route2->terrainLib->fillTerrainData(tTile, mOffset);
-
-        }
-        if(progress != NULL)
-           delete progress;
-
-    } 
     
+    qDebug() << "Fill Terrain data";
+    Terrain *tTile;
+    foreach (Tile* wTile, modifiedWorldTiles){
+        if(progress != NULL){
+            progress->setValue((++pi));
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+        }
+        if (wTile == NULL) 
+            continue;
+        tTile = terrainLib->getTerrainByXY(wTile->x, wTile->z, false);
+        if(tTile == NULL){
+            terrainLib->saveEmpty(wTile->x, -wTile->z);
+            if(!terrainLib->reload(wTile->x, wTile->z)){
+                qDebug() << "reload terrain fail";
+            }
+            tTile = terrainLib->getTerrainByXY(wTile->x, wTile->z, false);
+            
+        }
+        if (!tTile->loaded)
+           qDebug() << "FAIL main terrain not loaded";
+        
+        qDebug() << "fill";
+        route2->terrainLib->fillTerrainData(tTile, mOffset);
+        
+    }
+    if(progress != NULL)
+        delete progress;
     // Other
     
+
 }
 
 void Route::selectObjectsByXYRange(int mojex, int mojez, int minx, int maxx, int minz, int maxz){
@@ -541,8 +481,8 @@ void Route::loadAddons(){
     QString dirFile = Game::root + "/routes/" + Game::route + "/addons";
     QDir aDir(dirFile);
     if(!aDir.exists()){
-        if(Game::debugOutput) if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << dirFile;
-        if(Game::debugOutput) qDebug() << "# No Addons";
+        qDebug() << dirFile;
+        qDebug() << "# No Addons";
         return;
     }
         
@@ -583,7 +523,7 @@ bool Route::checkTrackSectionDatabase(){
     dialog.pushAction("IGNORE", "Ignore and continue - saving route may destroy your route");
     dialog.pushAction("EXIT", "Quit TSRE now");
     dialog.exec();
-    if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << dialog.actionChoosen;
+    qDebug() << dialog.actionChoosen;
     
     if(dialog.actionChoosen == "FIX"){
         Game::loadAllWFiles = true;
@@ -664,21 +604,10 @@ void Route::createMkrPlaces(){
     
     key = "| Route: Sidings";
     mkrList[key] = new CoordsRoutePlaces(trackDB, "sidings");
-    
-    key = "| Route: Speedposts";
-    mkrList[key] = new CoordsRoutePlaces(trackDB, "speedposts");
-
 }
 
 void Route::loadMkrList(){
-    /// Step one of Markers -- pulls the files in the files in the route directory
     //this->mkr = new CoordsMkr(Game::root + "/routes/" + Game::route + "/" + Game::routeName +".mkr");
-    if(mkrList.size() > 0)
-        { qDebug() << "Clearing Marker List " << mkrList.size(); 
-          mkrList.clear(); 
-          Game::markerFiles.clear();
-    } // clean up existing
-    
     QDir dir(Game::root + "/routes/" + Game::route);
     dir.setFilter(QDir::Files);
     foreach(QString dirFile, dir.entryList()){
@@ -688,7 +617,6 @@ void Route::loadMkrList(){
             mkrList[(dirFile).toLower()] = new CoordsKml(Game::root + "/routes/" + Game::route + "/" + dirFile);
         if(dirFile.endsWith(".gpx", Qt::CaseInsensitive))
             mkrList[(dirFile).toLower()] = new CoordsGpx(Game::root + "/routes/" + Game::route + "/" + dirFile);
-        Game::markerFiles.append(dirFile);
     }
     if(mkrList.size() > 0){
         if(mkrList[(Game::routeName+".mkr").toLower()] != NULL){
@@ -701,9 +629,6 @@ void Route::loadMkrList(){
             mkr = mkrList.begin().value();
         }
     }
-    /// step two of markers -- make pseudo markers for stations and sidings
-    createMkrPlaces();
-    
 }
 
 void Route::setMkrFile(QString name){
@@ -717,31 +642,15 @@ void Route::loadActivities(){
         return;
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList()<<"*.act");
-
-    foreach(QString actfile, dir.entryList()){ 
-        // Create a QFileInfo object for the specific file
-        QFileInfo checkFile(dir.filePath(actfile));
-
-        // Only add if the file size exceeds 100 bytes   /// EFO
-        if(checkFile.size() > 100) {
-            activityId.push_back(ActLib::AddAct(dir.path(), actfile)); 
-            if(Game::debugOutput) qDebug() << "activity loaded";            
-        }
-        else
-        {
-            qDebug() << actfile << " is too small, not loaded" ;
-        }
-    } 
-/*
-
     foreach(QString actfile, dir.entryList()){
-        
-        
         activityId.push_back(ActLib::AddAct(dir.path(), actfile));
     }
-  */      
+    
+    //for(int i = 0; i < ActLib::jestact; i++){
+    //    ActLib::Act[i]->setRouteContent(&path, &service, &traffic);
+    //}
 
-
+    qDebug() << "activity loaded";
     return;
 }
 
@@ -751,28 +660,13 @@ void Route::loadServices(){
         return;
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList()<<"*.srv");
-
-    foreach(QString actfile, dir.entryList()){
-        QFileInfo checkFile(dir.filePath(actfile));
-
-        if(checkFile.size() > 100) {
-            int id = ActLib::AddService(dir.path(), actfile);
-            //service.push_back(ActLib::Services[id]);
-            if(Game::debugOutput) qDebug() << "service loaded" ;
-        } else {
-            qDebug() << actfile << " is too small, not loaded" ;
-        }
-    }    
-    
-    /*
     foreach(QString actfile, dir.entryList()){
         int id = ActLib::AddService(dir.path(), actfile);
         //service.push_back(ActLib::Services[id]);
     }
-    if(Game::debugOutput) qDebug() << "service loaded";
-     */
+
+    qDebug() << "service loaded";
     return;
-    
 }
 
 void Route::loadTraffic(){
@@ -781,32 +675,12 @@ void Route::loadTraffic(){
         return;
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList()<<"*.trf");
-
-    foreach(QString actfile, dir.entryList()){ 
-        // Create a QFileInfo object for the specific file
-        QFileInfo checkFile(dir.filePath(actfile));
-
-        // Only add if the file size exceeds 100 bytes   /// EFO
-        if(checkFile.size() > 100) {
-            activityId.push_back(ActLib::AddTraffic(dir.path(), actfile)); 
-            if(Game::debugOutput) qDebug() << "traffic loaded";
-        }
-        else
-        {
-            qDebug() << actfile << " is too small, not loaded" ;
-        }
-    } 
-
-    
-/*
     foreach(QString actfile, dir.entryList()){
         int id = ActLib::AddTraffic(dir.path(), actfile);
         //traffic.push_back(ActLib::Traffics[id]);
     }
-*/
-
+    qDebug() << "traffic loaded";
     return;
- 
 }
 
 void Route::loadPaths(){
@@ -821,7 +695,7 @@ void Route::loadPaths(){
             path.push_back(ActLib::Paths[id]);
     }
 
-    if(Game::debugOutput) qDebug() << "paths loaded";
+    qDebug() << "paths loaded";
     return;
 }
 
@@ -967,7 +841,7 @@ void Route::loadTdbData(FileBuffer *data, QString type){
     int x = 0;
     int z = 0;
     while (!((sh = ParserX::NextTokenInside(data).toLower()) == "")) {
-       if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << sh;
+        qDebug() << sh;
         if (sh == "trackdb") {
             TDB *t = NULL;
             if(Game::serverClient == NULL){
@@ -1004,7 +878,7 @@ void Route::updateTileData(FileBuffer *data){
     int x = 0;
     int z = 0;
     while (!((sh = ParserX::NextTokenInside(data).toLower()) == "")) {
-      if(Game::debugOutput)  if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << sh;
+        qDebug() << sh;
         if (sh == ("x")) {
             x = ParserX::GetNumber(data);
             ParserX::SkipToken(data);
@@ -1053,7 +927,7 @@ void Route::preloadWFiles(bool gui){
     int i = 0;
     foreach(QString wfile, dir.entryList()){
         if(wfile.length() != 17){
-           if(Game::debugOutput) qDebug() << "# W File undefined name " << wfile;
+            qDebug() << "# W File undefined name " << wfile;
         }
         QStringRef wxString(&wfile, 1, 7);
         QStringRef wzString(&wfile, 8, 7);
@@ -1062,7 +936,7 @@ void Route::preloadWFiles(bool gui){
         tTile = tile[(WX)*10000 + WZ];
 
         if (tTile == NULL){
-           if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << wxString << wzString << "-" << WX << WZ;
+            qDebug() << wxString << wzString << "-" << WX << WZ;
             tile[(WX)*10000 + WZ] = new Tile(WX, WZ);
         }
         if(progress != NULL){
@@ -1071,7 +945,7 @@ void Route::preloadWFiles(bool gui){
         }
     }
 
-   if(Game::debugOutput) qDebug() << "#W Files preloaded: " << (QDateTime::currentMSecsSinceEpoch() - timeNow)/1000<< "s";
+    qDebug() << "#W Files preloaded: " << (QDateTime::currentMSecsSinceEpoch() - timeNow)/1000<< "s";
     delete progress;
     
 }
@@ -1284,7 +1158,7 @@ void Route::setTerrainTextureToObj(int x, int y, float *pos, Brush* brush, World
     float* ptr = punkty;
     obj->getLinePoints(ptr);
     int length = ptr - punkty;
-   if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << "lo "<<length;
+    qDebug() << "lo "<<length;
     Game::terrainLib->setTextureToTrackObj(brush, punkty, length, obj->x, obj->y);
     delete[] punkty;
 }
@@ -1317,7 +1191,7 @@ void Route::setTerrainTextureToTrack(int x, int y, float* pos, Brush* brush, int
             this->trackDB->getVectorSectionPoints(x, y, pos, punkty, mode);
     }
     int length = punkty.length();
-   if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << "l "<<length;
+    qDebug() << "l "<<length;
     Game::terrainLib->setTextureToTrackObj(brush, punkty.data(), length, x, y);
 }
 
@@ -1344,7 +1218,7 @@ void Route::setTerrainToTrackObj(WorldObj* obj, Brush* brush){
         else
             this->trackDB->getVectorSectionPoints(obj->x, obj->y, obj->UiD, punkty);
         int length = punkty.length();
-        if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << "l "<<length;
+        qDebug() << "l "<<length;
         if(length == 0){
             if(obj->sectionIdx >= 0){
                 float matrix[16];
@@ -1357,7 +1231,7 @@ void Route::setTerrainToTrackObj(WorldObj* obj, Brush* brush){
                 //obj->getLinePoints(ptr);
             }
             length = punkty.length();
-            if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << "l "<<length;
+            qDebug() << "l "<<length;
         }
         float offset = 0;//-0.3;
         if(length > 0)
@@ -1367,7 +1241,7 @@ void Route::setTerrainToTrackObj(WorldObj* obj, Brush* brush){
         float* ptr = punkty;
         obj->getLinePoints(ptr);
         int length = ptr - punkty;
-        if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << "l "<<length;
+        qDebug() << "l "<<length;
         Game::terrainLib->setTerrainToTrackObj(brush, punkty, length, obj->x, obj->y, obj->matrix);
         delete[] punkty;
     }
@@ -1398,19 +1272,19 @@ float Route::getDistantTerrainYOffset(){
 
 WorldObj* Route::placeObject(int x, int z, float* p) {
     float* q = new float[4];
-    Quat::fill((float*)q); 
-    return placeObject(x, z, p, (float*) q, 0, ref->selected); // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+    Quat::fill((float*)q);
+    return placeObject(x, z, p, (float*) q, 0, ref->selected);
 }
 
 WorldObj* Route::placeObject(int x, int z, float* p, float* q, float elev) {
-    return placeObject(x, z, p, q, elev, ref->selected); // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+    return placeObject(x, z, p, q, elev, ref->selected);
 }
 
 WorldObj* Route::placeObject(int x, int z, float* p, float* q, float elev, Ref::RefItem* r) {
     if(r == NULL) 
         return NULL;
     Game::check_coords(x, z, p);
-    // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+
     // pozycja wzgledem TDB:
     int itemTrackType = WorldObj::isTrackObj(r->type);
     
@@ -1432,11 +1306,11 @@ WorldObj* Route::placeObject(int x, int z, float* p, float* q, float elev, Ref::
             Quat::copy(tq2, q);
             int ok = -1;
             if(placementAutoTargetType == 0) {
-                ok = this->trackDB->findNearestPositionOnTDB(playerT, tp, tq, tpos); // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+                ok = this->trackDB->findNearestPositionOnTDB(playerT, tp, tq, tpos);
             } else if(placementAutoTargetType == 1) {
-                ok = this->roadDB->findNearestPositionOnTDB(playerT, tp, tq, tpos); // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+                ok = this->roadDB->findNearestPositionOnTDB(playerT, tp, tq, tpos);
             } else if(placementAutoTargetType == 2) {
-                ok = this->trackDB->findNearestPositionOnTDB(playerT, tp, tq, tpos);  if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+                ok = this->trackDB->findNearestPositionOnTDB(playerT, tp, tq, tpos);
                 int ok2 = this->roadDB->findNearestPositionOnTDB(playerT2, tp2, tq2, tpos);
                 if(ok2 >= 0)
                     if(ok < 0 || ok2 < ok){
@@ -1458,15 +1332,15 @@ WorldObj* Route::placeObject(int x, int z, float* p, float* q, float elev, Ref::
     if(itemTrackType == 1){
         tpos = new float[3];
         float* playerT = Vec2::fromValues(x, z);
-        int ok = this->trackDB->findNearestPositionOnTDB(playerT, p, q, tpos); // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
-        if(ok < 0) return NULL;      
+        int ok = this->trackDB->findNearestPositionOnTDB(playerT, p, q, tpos);
+        if(ok < 0) return NULL;
         x = playerT[0];
         z = playerT[1];
     }
     if(itemTrackType == 2){
         tpos = new float[3];
         float* playerT = Vec2::fromValues(x, z);
-        int ok = this->roadDB->findNearestPositionOnTDB(playerT, p, q, tpos); // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+        int ok = this->roadDB->findNearestPositionOnTDB(playerT, p, q, tpos);
         if(ok < 0) return NULL;
         x = playerT[0];
         z = playerT[1];
@@ -1474,12 +1348,12 @@ WorldObj* Route::placeObject(int x, int z, float* p, float* q, float elev, Ref::
     if(itemTrackType == 3){
         tpos = new float[3];
         float* playerT = Vec2::fromValues(x, z);
-        int ok = this->roadDB->findNearestPositionOnTDB(playerT, p, q, tpos); // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+        int ok = this->roadDB->findNearestPositionOnTDB(playerT, p, q, tpos);
         if(ok < 0) return NULL;
         float* buffer;
         int len;
         this->roadDB->getVectorSectionLine(buffer, len, playerT[0], playerT[1], tpos[0]);
-        if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << "len "<<len;
+        qDebug() << "len "<<len;
         bool ok1 = this->trackDB->getSegmentIntersectionPositionOnTDB(playerT, buffer, len, p, q, tpos);
         if(!ok1) return NULL;
         x = playerT[0];
@@ -1493,7 +1367,7 @@ WorldObj* Route::placeObject(int x, int z, float* p, float* q, float elev, Ref::
     
     int snapableSide = -1;
     if(placementStickToTarget && placementAutoTargetType == 3){
-        snapableSide = tTile->getNearestSnapablePosition(p, q);  
+        snapableSide = tTile->getNearestSnapablePosition(p, q);
     }
         
     float endp[5];
@@ -1501,57 +1375,52 @@ WorldObj* Route::placeObject(int x, int z, float* p, float* q, float elev, Ref::
     endp[3] = 1;
     float firstPos[3];
     if ((r->type == "trackobj" || r->type == "dyntrack" )) {
-        if(r->type == "dyntrack"){   if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+        if(r->type == "dyntrack"){
             this->roadDB->setDefaultEnd(0);
             this->trackDB->setDefaultEnd(0);
         }
-        if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" <<"1: "<< x <<" "<<z<<" P "<<p[0]<<" "<<p[1]<<" "<<p[2]<<" Q" <<q[1]<<" "<<q[3] ;
+        qDebug() <<"1: "<< x <<" "<<z<<" "<<p[0]<<" "<<p[1]<<" "<<p[2]; 
         int oldx = x;
         int oldz = z;
         Vec3::copy(firstPos, p);
         if(this->tsection->isRoadShape(r->value))
             this->roadDB->findPosition(x, z, p, q, endp, r->value);
         else
-            this->trackDB->findPosition(x, z, p, q, endp, r->value); // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+            this->trackDB->findPosition(x, z, p, q, endp, r->value);
         Game::check_coords(x, z, p);
         firstPos[0] -= (x-oldx)*2048;
         firstPos[2] -= (z-oldz)*2048;
-        if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" <<"2: "<< x <<" "<<z<<" P "<<p[0]<<" "<<p[1]<<" "<<p[2]<<" Q" <<q[1]<<" "<<q[3] ; 
+        qDebug() <<"2: "<< x <<" "<<z<<" "<<p[0]<<" "<<p[1]<<" "<<p[2]; 
         tTile = requestTile(x, z);
         if(tTile == NULL) return NULL;
         if(tTile->loaded != 1) return NULL;
     }
-          
-    WorldObj* nowy = tTile->placeObject(p, q, r, tpos);   if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << nowy->typeObj << "/" << nowy->type;  
+
+    WorldObj* nowy = tTile->placeObject(p, q, r, tpos);
+
     if ((r->type == "trackobj" || r->type == "dyntrack" )&& nowy != NULL) {
         if(nowy->endp == 0) nowy->endp = new float[5];
         memcpy(nowy->endp, endp, sizeof(float)*5);
         Vec3::copy(nowy->firstPosition,firstPos);
     }   
     nowy->snapped(snapableSide);
-    if(nowy->typeID == nowy->sstatic){        
+    if(nowy->typeID == nowy->sstatic){
         moveWorldObjToTile(nowy->x, nowy->y, nowy);
     }
+
     if(elev !=0)
         nowy->rotate(elev, 0, 0);
-    
-    if((r->type == "signal") || (r->type == "speedpost")) {        
-            if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" <<"1: "<< x <<" "<<z<<" P "<<nowy->position[0]<<" "<<nowy->position[1]<<" "<<nowy->position[2]<<" Q" <<nowy->qDirection[1]<<" "<<nowy->qDirection[3] ;            
-            float pos[3]; pos[0] = 0;  pos[1] = 0;  pos[2] = 0;
-            if(r->currentFilename.toLower().contains("gantry") == false)  pos[0] = Game::sigOffset;
-            Vec3::transformQuat((float*)pos, (float*)pos, (float*)nowy->qDirection);
-            nowy->translate(pos[0], pos[1], pos[2]);  nowy->modified = true;  nowy->setMartix();
-            if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" <<"1: "<< x <<" "<<z<<" P "<<nowy->position[0]<<" "<<nowy->position[1]<<" "<<nowy->position[2]<<" Q" <<nowy->qDirection[1]<<" "<<nowy->qDirection[3] ;            
-    }
-    
-    Undo::PushWorldObjPlaced(nowy);  if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+
+    Undo::PushWorldObjPlaced(nowy); 
     return nowy;
 }
 
 float* Route::getPointerPosition(float* out, int &x, int &z, float* pos){
     if(out == NULL)
         return NULL;
+    
     Vec3::copy(out, pos);
+    
     if(placementStickToTarget){
             float ttpos[3];
             float* playerT = Vec2::fromValues(x, z);
@@ -1562,12 +1431,12 @@ float* Route::getPointerPosition(float* out, int &x, int &z, float* pos){
             Vec3::copy(tp2, pos);
             int ok = -1;
             if(placementAutoTargetType == 0) {
-                ok = this->trackDB->findNearestPositionOnTDB(playerT, tp, tq, ttpos); // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+                ok = this->trackDB->findNearestPositionOnTDB(playerT, tp, tq, ttpos);
             } else if(placementAutoTargetType == 1) {
-                ok = this->roadDB->findNearestPositionOnTDB(playerT, tp, tq, ttpos); // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+                ok = this->roadDB->findNearestPositionOnTDB(playerT, tp, tq, ttpos);
             } else if(placementAutoTargetType == 2) {
-                ok = this->trackDB->findNearestPositionOnTDB(playerT, tp, tq, ttpos);   if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
-                int ok2 = this->roadDB->findNearestPositionOnTDB(playerT2, tp2, tq2, ttpos); // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+                ok = this->trackDB->findNearestPositionOnTDB(playerT, tp, tq, ttpos);
+                int ok2 = this->roadDB->findNearestPositionOnTDB(playerT2, tp2, tq2, ttpos);
                 if(ok2 >= 0)
                     if(ok < 0 || ok2 < ok){
                         ok = ok2;
@@ -1668,8 +1537,6 @@ void Route::dragWorldObject(WorldObj* obj, int x, int z, float* pos){
         if(tTile->loaded != 1) return;
     }
 
-    /// 
-    
     obj->setPosition(tpos);
     Vec3::copy(obj->firstPosition, obj->position);
     obj->setQdirection(q);
@@ -1681,9 +1548,9 @@ void Route::dragWorldObject(WorldObj* obj, int x, int z, float* pos){
 
 TRitem *Route::getTrackItem(int TID, int UID){
     if(TID == 0)
-        return trackDB->trackItems[UID];  if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+        return trackDB->trackItems[UID];
     if(TID == 1)
-        return roadDB->trackItems[UID]; // if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+        return roadDB->trackItems[UID];
     return NULL;
 }
 
@@ -1947,7 +1814,7 @@ WorldObj* Route::autoPlaceObject(int x, int z, float* p, int mode) {
 }
 
 void Route::fillWorldObjectsByTrackItemIds(QHash<int,QVector<WorldObj*>> &objects, int tdbId){
-    foreach (Tile* tTile, tile){ 
+    foreach (Tile* tTile, tile){
         if (tTile == NULL) continue;
         if (tTile->loaded == 1) {
             tTile->fillWorldObjectsByTrackItemIds(objects, tdbId);
@@ -1956,7 +1823,7 @@ void Route::fillWorldObjectsByTrackItemIds(QHash<int,QVector<WorldObj*>> &object
 }
 
 void Route::fillWorldObjectsByTrackItemId(QVector<WorldObj*> &objects, int tdbId, int id){
-    foreach (Tile* tTile, tile){  
+    foreach (Tile* tTile, tile){
         if (tTile == NULL) continue;
         if (tTile->loaded == 1) {
             tTile->fillWorldObjectsByTrackItemId(objects, tdbId, id);
@@ -1998,7 +1865,7 @@ void Route::replaceWorldObjPointer(WorldObj* o, WorldObj* n){
         return;
     int x = o->x;
     int z = o->y;
-    if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":";
+    
     Tile *tTile;
     tTile = tile[((x)*10000 + z)];
     if (tTile == NULL)
@@ -2028,14 +1895,14 @@ WorldObj* Route::makeFlexTrack(int x, int z, float* p) {
     Ref::RefItem r;
     r.type = "dyntrack";
     r.value = -1;
-    if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << "1";
+    qDebug() << "1";
     qe[0] = 0;
     qe[1] = 0;
     qe[2] = 0;
     qe[3] = 1;
     DynTrackObj* track = (DynTrackObj*)placeObject(x, z, p, (float*)&qe, 0, &r);
     if(track != NULL){
-        if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << "2";
+        qDebug() << "2";
         QString sh = "dyntrackdata";
         track->set(sh, (float*)dyntrackData);
     }
@@ -2043,11 +1910,9 @@ WorldObj* Route::makeFlexTrack(int x, int z, float* p) {
 }
 
 void Route::addToTDB(WorldObj* obj) {
-    //qDebug() << "1971";
     if(obj == NULL) return;
     if(obj->typeObj != WorldObj::worldobj)
         return;
-    //qDebug() << "A2TDB 1981";    
     int x = obj->x;//post[0];
     int z = obj->y;//post[1];
     float p[3];
@@ -2067,51 +1932,28 @@ void Route::addToTDB(WorldObj* obj) {
     q[1] = obj->qDirection[1];
     q[2] = obj->qDirection[2];
     q[3] = obj->qDirection[3];
-    //qDebug() << "A2TDB 2001";
     
     if (obj->type == "trackobj") {
-        //qDebug() << "A2TDB 2003";
         TrackObj* track = (TrackObj*) obj;
         //this->trackDB->placeTrack(x, z, p, q, r, nowy->UiD);
         //float scale = (float) sqrt(track->qDirection[0] * track->qDirection[0] + track->qDirection[1] * track->qDirection[1] + track->qDirection[2] * track->qDirection[2]);
         //float elevation = ((track->qDirection[0] + 0.0000001f) / fabs(scale + 0.0000001f))*(float) -acos(track->qDirection[3])*2;
         //float elevation = -3.14/16.0;
         //q[0] = elevation;
-                //qDebug() << "A2TDB 2010";
-        
-//        if(track->sectionIdx > trackDB->tsection->tsectionMaxIdx )
-//        {
-//            qDebug() << "Section IDX out of range for TrackObj";
-//            return;
-//        }
-        
         if(this->tsection->isRoadShape(track->sectionIdx))
             this->roadDB->placeTrack(x, z, (float*) &p, (float*) &q, track->sectionIdx, obj->UiD);
         else
             this->trackDB->placeTrack(x, z, (float*) &p, (float*) &q, track->sectionIdx, obj->UiD, &track->jNodePosn);
-        //qDebug() << "A2TDB 2015";                
         //obj->setPosition(p);
         //obj->setQdirection(q);
         //obj->setMartix();
         //track->setJNodePosN();
     } else if(obj->type == "dyntrack"){
-        //qDebug() << "A2TDB 2021";        
         Undo::Clear();
         DynTrackObj* dynTrack = (DynTrackObj*) obj;
-        
-                
-        /// EFO If the sectionIdx is out of range
-        if(dynTrack->sectionIdx > trackDB->tsection->routeMaxIdx)
-        {
-            int prevSectionIdx = dynTrack->sectionIdx;
-            dynTrack->sectionIdx = -1;
-            qWarning() << "DT SectionIDX " << prevSectionIdx << " is greater than max in local TSection -- " << trackDB->tsection->routeMaxIdx << " -- resetting to be safe." ;
-        } 
         if(dynTrack->sectionIdx == -1){
             this->trackDB->fillDynTrack(dynTrack);
-            if(Game::debugOutput) qDebug() << "DT SectionIDX " << dynTrack->sectionIdx << " being written to tSection... ";
         }
-        //qDebug() << "A2TDB 2038";
         this->trackDB->placeTrack(x, z, (float*) &p, (float*) &q, dynTrack->sectionIdx, obj->UiD);
         obj->setPosition(p);
         obj->setQdirection(q);
@@ -2151,44 +1993,35 @@ void Route::toggleToTDB(WorldObj* obj) {
     }
     if(roadDB->ifTrackExist(obj->x, obj->y, obj->UiD) || trackDB->ifTrackExist(obj->x, obj->y, obj->UiD)){
         removeTrackFromTDB(obj);
-        obj->setModified();   //// EFO added to account for unsaved on TDB edits only
         return;
     }
     addToTDB(obj);
-    obj->setModified();   //// EFO added to account for unsaved on TDB edits only
 }
 
 void Route::addToTDBIfNotExist(WorldObj* obj) {
-    //qDebug() << "A2TDB 2086";
     if(obj == NULL) return;
-    //qDebug() << "A2TDB 2088";
     if(obj->typeObj != WorldObj::worldobj)
         return;
-    //qDebug() << "A2TDB 2089";
     if(obj->typeID == obj->groupobject) {
         GroupObj *gobj = (GroupObj*)obj;
         for(int i = 0; i < gobj->objects.size(); i++ ){
-            addToTDBIfNotExist(gobj->objects[i]);   //qDebug() << "A2TDB 2095 Exit";
+            addToTDBIfNotExist(gobj->objects[i]);
         }
         return;
     }
     
     if (obj->type != "trackobj" && obj->type != "dyntrack") {
-            //qDebug() << "A2TDB 2100 Exit";
             return;
     }
-       
     if(roadDB->ifTrackExist(obj->x, obj->y, obj->UiD) || trackDB->ifTrackExist(obj->x, obj->y, obj->UiD)){
-            //qDebug() << "A2TDB 2105 Exit";
-            return;
-        }
+        return;
+    }
     
-    //qDebug() << "A2TDB 2110";    
     Undo::StateBegin();
     Undo::PushTrackDB(trackDB, false);
     Undo::PushTrackDB(roadDB, true);
     Undo::StateEnd();
-    //qDebug() << "A2TDB 2115";    
+    
     addToTDB(obj);
 }
 
@@ -2241,9 +2074,9 @@ void Route::moveWorldObjToTile(int x, int z, WorldObj* obj){
     x = xx;
     z = zz;
     
-    if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << "obj outside tile border !!!";
+    qDebug() << "obj outside tile border !!!";
     //qDebug() << "new tile" << x <<" "<< z;
-    if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << "new tile" << xx <<" "<< zz <<" "<< obj->position[0]<<" "<< -obj->position[2];
+    qDebug() << "new tile" << xx <<" "<< zz <<" "<< obj->position[0]<<" "<< -obj->position[2];
 
     
     Undo::Clear();
@@ -2262,7 +2095,7 @@ void Route::moveWorldObjToTile(int x, int z, WorldObj* obj){
         obj->placedAtPosition[2] = obj->position[2];
         tTile->placeObject(obj);
     }
-    if(Game::debugOutput)  qDebug() << __FILE__ << " " << __LINE__ << ":" << "--" << obj->x <<" "<< obj->y<<" "<< obj->position[0]<<" "<< -obj->position[2];
+    qDebug() << "--" << obj->x <<" "<< obj->y<<" "<< obj->position[0]<<" "<< -obj->position[2];
 }
 
 void Route::deleteTDBTree(WorldObj* obj){
@@ -2414,7 +2247,7 @@ void Route::getUnsavedInfo(QVector<QString> &items){
 
 void Route::save() {
     if (!Game::writeEnabled) return;
-    qDebug() << __FILE__ << " " << __LINE__ << ":" << "save";
+    qDebug() << "save";
     foreach (Tile* tTile, tile){
         if (tTile == NULL) continue;
         if (tTile->loaded == 1 && tTile->isModified()) {
@@ -2427,17 +2260,6 @@ void Route::save() {
     this->roadDB->save();
     this->trk->save();
     ActLib::SaveAll();
-    
-    /// EFO this is a hack to trick the updated timestamp on the folder.  It could be used as a stub for 
-    /// moving the TSRE log out of the TSRE folder and placing into the route folder, which might be a better place for it
-    QString filePath;
-    filePath = Game::root + "/routes/" + Game::route + "/" + Game::routeName + "tsreupd.txt";
-    QFile file(filePath);    
-    file.open(QIODevice::WriteOnly);
-    file.close(); 
-    QFile::remove(filePath);
-    
-    
     /*foreach(Service *s, service){
         if(s == NULL)
             continue;
@@ -2504,7 +2326,7 @@ void Route::createNew() {
 
     path = Game::root + "/routes/" + Game::route;
     if (QDir(path).exists()) {
-        if(Game::debugOutput) qDebug() << "route folder exist - aborting";
+        qDebug() << "route folder exist - aborting";
         return;
     }
     QDir().mkdir(path);
@@ -2766,4 +2588,3 @@ void Route::confirmUnsafe() {
             qDebug() << "Unsafe Mode Disabled" ;
         }
 }
-

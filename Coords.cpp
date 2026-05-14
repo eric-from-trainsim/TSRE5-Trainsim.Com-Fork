@@ -132,7 +132,7 @@ void Coords::render(GLUU* gluu, float * playerT, float* playerW, float playerRot
                     txt = new TextObj(markerList[i].name, 16, Game::markerText);
                     txt->setColor(0,0,0);
                     nameGl[markerList[i].name.toStdString()] = txt;
-                    // qDebug() << "coords136 rendering marker: " << markerList[i].name << " : " << playerRot;
+                    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "rendering marker: " << markerList[i].name << " : " << playerRot;
                 } 
                 txt->render(playerRot);
                 gluu->mvPopMatrix();

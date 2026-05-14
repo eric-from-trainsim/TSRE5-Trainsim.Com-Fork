@@ -98,7 +98,7 @@ void EngListWidget::fs(QString n){
     if(couplingType.currentIndex() == 0)
         cf = "";
     QString sf = searchBox.text();
-    // qDebug() << ef <<" "<< cf <<" "<< sf;
+    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << ef <<" "<< cf <<" "<< sf;
     fillEngList(ef, cf, sf);
 }
 
