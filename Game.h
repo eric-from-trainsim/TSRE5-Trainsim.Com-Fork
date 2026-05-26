@@ -255,6 +255,7 @@ public:
     static bool routeMergeEnabled;    
     static bool routeMergeTerrain;
     static bool routeMergeTDB;
+    static bool routeMergeRDB;    
     static bool routeMergeTerrtex;    
     static bool routeRebuildTDB;    
     static QStringList preloadTextures;

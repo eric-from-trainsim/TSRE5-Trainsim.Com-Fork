@@ -96,7 +96,7 @@ void TerrainLibQt::loadQuadTree() {
 
     //currentQt = &terrainQtLo;
     //currentQuadTree = quadTreeLo;
-    //quadTree->listNames();
+    quadTree->listNames();
 }
 
 void TerrainLibQt::loadQuadTreeDetailed(FileBuffer *data) {

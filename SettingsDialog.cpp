@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <QTabWidget>
 #include <QFormLayout>
+#include <QWidget>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QRadioButton>
@@ -298,7 +299,8 @@ void SettingsDialog::setupUi() {
     addRow(l, "routeRebuildTDB", "bool", "Route Rebuild TDB", "", true);
     addRow(l, "routeMergeEnabled", "bool", "Route Merge Enable", "Must turn on to enable merge subfunctions", true);    
     addRow(l, "routeMergeString", "string", "Route Merge String", "e.g. IRM:0:0:0", true);
-    addRow(l, "routeMergeTDB", "bool", "Route Merge TDB", "false brings tracks and road without TDB/RDB entries", true);
+    addRow(l, "routeMergeTDB", "bool", "Route Merge TDB", "false brings tracks without TDB entries", true);
+    addRow(l, "routeMergeRDB", "bool", "Route Merge RDB", "false brings road without RDB entries", true);
     addRow(l, "routeMergeTerrain", "bool", "Route Merge Terrain", "false skips bringing in elevation mapping", true);
     addRow(l, "routeMergeTerrtex", "bool", "Route Merge Terrtex", "false skips bringing in terrain textures", true);
 
@@ -561,6 +563,7 @@ QString SettingsDialog::getGameValue(const QString& key) {
         if (key == "routemergeenabled") return Game::routeMergeEnabled ? "true" : "false";
         if (key == "routemergestring") return Game::routeMergeString;
         if (key == "routemergetdb") return Game::routeMergeTDB ? "true" : "false";
+        if (key == "routemergerdb") return Game::routeMergeRDB ? "true" : "false";
         if (key == "routemergeterrain") return Game::routeMergeTerrain ? "true" : "false";
         if (key == "routemergeterrtex") return Game::routeMergeTerrtex ? "true" : "false";
         if (key == "routerebuildtdb") return Game::routeRebuildTDB ? "true" : "false";

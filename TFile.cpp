@@ -102,17 +102,18 @@ bool TFile::readT(QString fSfile) {
         delete data;
         return true;
 }
+
 void TFile::load(FileBuffer* data){
         data->off += 32;
         int pozycja, offset, akto;
         data->findToken(136);
-        if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "znaleziono sekcje 136 na " << data->off << " ";
+        if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "sections found 136 on " << data->off << " ";
         data->off += 5;
         for (int i = 0; i < 6; i++) {
             pozycja = data->getInt();
             offset = data->getInt();
             akto = data->off;
-            if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "znaleziono sekcje " << pozycja <<" na " << data->off << " " << offset;
+            if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "sections found " << pozycja <<" on " << data->off << " " << offset;
 
             switch (pozycja) {
                 case 137:
@@ -157,7 +158,7 @@ void TFile::get139(FileBuffer* data, int length) {
             pozycja = data->getInt();
             offset = data->getInt();
             akto = data->off;
-            if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "139 znaleziono sekcje " << pozycja <<" na " << data->off << " " << offset;
+            // if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "139 sections found " << pozycja <<" na " << data->off << " " << offset;
 
             switch (pozycja) {
                 case 140:
@@ -213,6 +214,7 @@ void TFile::get139(FileBuffer* data, int length) {
                     if(Game::debugOutput) qDebug() << "TFile - unknown token: "<< pozycja;
                     break;
             }
+            /*
             if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << 
                     "140: " << nsamples <<                     
                     "141: " << sampleRotation <<
@@ -224,7 +226,7 @@ void TFile::get139(FileBuffer* data, int length) {
                     "147: " << sampleEbuffer << 
                     "148: " << sampleNbuffer << 
                     "281: " << sampleASbuffer ;
-                    
+              */      
             data->off = akto + offset;
             if(data->off >= length) break;
         }
@@ -292,7 +294,7 @@ void TFile::get153(FileBuffer* data, TFile::Mat* m) {
         data->off++;
         int ilosc = data->getInt();
         m->count153 = ilosc;
-        if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "i to " << ilosc;
+        // if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "i to " << ilosc;
         for (int j = 0; j < ilosc; j++) {
             pozycja = data->getInt();
             offset = data->getInt();
@@ -339,7 +341,7 @@ void TFile::get156(FileBuffer* data, TFile::Mat* m) {
             m->itex[j][1] = data->getInt();//&0xff;
             m->itex[j][2] = data->getInt();//&0xff;
             m->itex[j][3] = data->getInt();//&0xff;
-            if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "get156: " << j <<":" <<m->itex[j][0] << " " << m->itex[j][1] << " " << m->itex[j][2] << " " << m->itex[j][3];
+            // if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "get156: " << j <<":" <<m->itex[j][0] << " " << m->itex[j][1] << " " << m->itex[j][2] << " " << m->itex[j][3];
 
             data->off = akto + offset;
         }
@@ -355,7 +357,7 @@ void TFile::get157(FileBuffer* data) {
         data->off++;
         int ttilosc = data->getInt();
         //qDebug() << "ttilosc " << ttilosc;
-        if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "ilosc " << ttilosc;
+        // if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "ilosc " << ttilosc;
         int tttpozycja, tttoffset, tttakto;
         //
         
@@ -428,7 +430,7 @@ void TFile::get163(FileBuffer* data, int n) {
             tdata[j*13+11] = data->getFloat();
             tdata[j*13+12] = data->getFloat();
             errorBias[j] = data->getFloat();
-            if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "get163: " << tdata[j*7+1] << tdata[j*7+2] << tdata[j*7+3] << tdata[j*7+4] << tdata[j*7+5] << tdata[j*7+6];
+            // if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "get163: " << tdata[j*7+1] << tdata[j*7+2] << tdata[j*7+3] << tdata[j*7+4] << tdata[j*7+5] << tdata[j*7+6];
                                 
             //data->off = akto + offset;
         }

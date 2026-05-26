@@ -89,13 +89,13 @@ void Terrain::load(){
     //QString filename = getTileNameExperimental2((int) x, (int) -y);
     //qDebug() << filename << x << -y;
     if (!tfile->readT((path + name + ".t"))) {
-        //qDebug() << " t fail" << name;
+        qDebug() << " t fail" << name;
         return;
     }
     if(tfile->sampleYbuffer == NULL)
         return;
     if (!readRAW((path + *tfile->sampleYbuffer/* + "_y.raw"*/))) {
-        //qDebug() << " y fail" << name;
+        qDebug() << " y fail" << name;
         return;
     }
     if(tfile->sampleFbuffer != NULL)

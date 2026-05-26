@@ -40,7 +40,7 @@
 //////// Version
 //////////////////////////////////
 
-QString Game::AppVersion = "Trainsim.Com Fork v0.8.006e";  // over-ride from main.cpp
+QString Game::AppVersion = "Trainsim.Com Fork v0.8.006h";  // over-ride from main.cpp
 
 
 bool Game::ServerMode = false;
@@ -220,7 +220,7 @@ QString Game::mainPos;   /// EFO Null handling exists
 QString Game::statusPos;  /// EFO Null handling exists
 QString Game::naviPos;  /// EFO Null handling exists
 
-bool  Game::debugOutput = true;  /// this can be overridden later
+bool  Game::debugOutput = false;  /// this can be overridden later
 bool  Game::legacySupport = false; 
 bool  Game::newSymbols = true;
 int   Game::pointerIn = 4;
@@ -273,6 +273,7 @@ bool Game::extendedDebug = false;
 bool Game::routeMergeEnabled = false;
 bool Game::routeMergeTerrain = false;
 bool Game::routeMergeTDB = false;
+bool Game::routeMergeRDB = false;
 bool Game::routeMergeTerrtex = false;
 bool Game::routeRebuildTDB = false;
 
@@ -349,12 +350,25 @@ void Game::InitAssets() {
 
 void Game::load() {
     
+QString appVersion = Game::AppVersion;
+int padLength = 56 - appVersion.length();
+QString formattedLine = QString("##  %1 Log File %2  ##")
+                        .arg(appVersion)
+                        .arg(QString(qMax(0, padLength), ' '));
+
+
+
+    qDebug() <<  "##########################################################################";
+    qDebug() <<  "##                                                                      ##";          
+    qDebug().noquote() << formattedLine;    
+    qDebug() <<  "##                                                                      ##"; 
+    qDebug() <<  "##########################################################################";    
+
     QString sh;
-    QString path;
-    
+    QString path;    
     path = "settings.txt";
     QFile file(path);
-    
+        
     if (!file.exists()){
         qDebug() << "creating new settings file";
 //        CreateNewSettingsFile();   /// EFO replacing this with SettingsDialog's new create 
@@ -421,7 +435,7 @@ void Game::load() {
  
 
  *  */
-        if(Game::extendedDebug) 
+        if(Game::extendedDebug == true) 
         {
             qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << setname << " --> " << setval;        
         }else if (Game::debugOutput) 
@@ -602,7 +616,6 @@ void Game::load() {
                 else
                     routeMergeEnabled = false; 
             }
-
             
             if(setname =="routemergeterrain"){
                 if((setval == "true") or (setval == "1") or (setval == "on"))
@@ -618,6 +631,14 @@ void Game::load() {
                     routeMergeTDB = false; 
             }
 
+            if(setname =="routemergerdb"){
+                if((setval == "true") or (setval == "1") or (setval == "on"))
+                    routeMergeRDB = true;
+                else
+                    routeMergeRDB = false; 
+            }
+            
+            
             if(setname =="routemergeterrtex"){
                 if((setval == "true") or (setval == "1") or (setval == "on"))
                     routeMergeTerrtex = true;
@@ -1166,7 +1187,6 @@ void Game::load() {
         
     }
     
-    qDebug() <<  Game::AppVersion ;
     
     cleanupLogs();
 

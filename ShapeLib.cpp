@@ -64,7 +64,7 @@ int ShapeLib::addShape(QString path, QString texPath) {
                 return (int)it->first;
             }
     }
-    if(Game::debugOutput) qDebug() << "Nowy " << jestshape << " shape: " << pathid;
+    if(Game::extendedDebug) qDebug() << "New item " << jestshape << " shape: " << pathid;
 
     shape[jestshape] = new SFile(pathid, path.split("/").last(), texPath);
     shape[jestshape]->pathid = pathid;

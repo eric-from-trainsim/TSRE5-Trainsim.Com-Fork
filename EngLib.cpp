@@ -52,7 +52,7 @@ int EngLib::addEng(QString path, QString name) {
     //qDebug() << "Nowy " << jesteng << " eng: " << pathid;
 
     eng[jesteng] = new Eng(pathid, path, name);
-    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "EngLib 49 : "<< pathid << " ~ emass: " << eng[jesteng]->mass ;
+    if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" <<  pathid << " ~ emass: " << eng[jesteng]->mass ;
 
     return jesteng++;
 }

@@ -899,9 +899,16 @@ int TDB::newJunction(int x, int z, float* p, float* qe, int r, int uid, int end)
     return junction;
 }
 
-int TDB::joinTracks(int iendp) {
+//// called by tdb::PlaceTrack which is called by Route::addToTDB
+int TDB::joinTracks(int iendp) {   
     TRnode* endp = trackNodes[iendp];
+    
+    //if((Game::routeRebuildTDB == true) && (endp == nullptr)) return -1;   /// this was causing crash in the TDB Rebuild only
 
+        
+
+    
+    
     if(endp->typ == 0){
         for (int j = 1; j <= iTRnodes; j++) {
             TRnode* n = trackNodes[j];
@@ -971,19 +978,19 @@ int TDB::joinVectorSections(int id1, int id2) {
     TRnode* section2e2 = trackNodes[section2->TrPinS[1]];
     
     if (section1e2->equals(section2e1)) {
-        if(Game::debugOutput) qDebug() << "ok";
+        if(Game::debugOutput) qDebug() << "joined ok " << id1 << " " << id2;
     }
     else if (section2e2->equals(section1e1)) {
-        if(Game::debugOutput) qDebug() << "switch";
+        if(Game::debugOutput) qDebug() << "switch found for nodes " << id1 << " " << id2;
         return joinVectorSections(id2, id1);
     }
     else if (section1e2->equals(section2e2)) {
-        if(Game::debugOutput) qDebug() << "rot2";
+        if(Game::debugOutput) qDebug() << "rot2 found for node " << id2;
         rotate(id2);
         return joinVectorSections(id1, id2);
     }
     else if (section1e1->equals(section2e1)) {
-       if(Game::debugOutput)  qDebug() << "rot1";
+       if(Game::debugOutput)  qDebug() << "rot1 found for node " << id1;
         rotate(id1);
         return joinVectorSections(id1, id2);
     }
@@ -1036,7 +1043,7 @@ void TDB::moveItemsFrom2to1(int id2, int id1){
     
     // update items
     float d = getVectorSectionLength(id1);
-    if(Game::debugOutput) qDebug() << "d: " << d;
+    if(Game::debugOutput) qDebug() << id1 << "node vector length : " << d;
     TRitem* trit;
     for(int i = 0; i < section2->iTri; i++){
         trit = this->trackItems[section2->trItemRef[i]];
@@ -1690,6 +1697,7 @@ bool TDB::fillJNodePosn(int x, int z, int uid, QVector<std::array<float, 5>> *jN
     return false;
 }
 
+/// called by Route::addToTDB
 bool TDB::placeTrack(int x, int z, float* p, float* q, int sectionIdx, int uid, QVector<std::array<float, 5>> *jNodePosn) {
     float qe[4];
     float vect[3];
@@ -1805,7 +1813,6 @@ bool TDB::placeTrack(int x, int z, float* p, float* q, int sectionIdx, int uid, 
         }
         
         if(junctionId[ends[0]] != 0){
-            if(Game::debugOutput) qDebug() << "append to junction";
             appendToJunction(junctionId[ends[0]], start, 1);
             joinTracks(junctionId[ends[0]]);
         } else {
@@ -1845,7 +1852,6 @@ bool TDB::placeTrack(int x, int z, float* p, float* q, int sectionIdx, int uid, 
 
 bool TDB::removeTrackFromTDB(int x, int y, int UiD){
     y = -y;
-    if(Game::debugOutput) qDebug() << "Removing from TDB: " << x << " " << y << " " << UiD; 
     
     bool ok = false;
     TRnode *n;
@@ -1923,7 +1929,7 @@ bool TDB::ifTrackExist(int x, int y, int UiD){
                     if(n->trVectorSection[j].param[2] == x)
                         if(n->trVectorSection[j].param[3] == y)
                             if(n->trVectorSection[j].param[4] == UiD){
-                                if(Game::debugOutput) qDebug() << "Found in DB";
+                                if(Game::debugOutput) qDebug() << "UID " << UiD << " found in DB";
                                 return true;
                     }
             }

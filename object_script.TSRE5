@@ -40,15 +40,6 @@ build/Release_x64/MinGW_64b-Windows/CoordsKml.o
 build/Release_x64/MinGW_64b-Windows/CoordsMkr.o
 build/Release_x64/MinGW_64b-Windows/CoordsRoutePlaces.o
 build/Release_x64/MinGW_64b-Windows/DynTrackObj.o
-build/Release_x64/MinGW_64b-Windows/CrossoverObj.o
-build/Release_x64/MinGW_64b-Windows/Launcher.o
-build/Release_x64/MinGW_64b-Windows/PolyForestObj.o
-build/Release_x64/MinGW_64b-Windows/PropertiesHazard.o
-build/Release_x64/MinGW_64b-Windows/PropertiesPolyForest.o
-build/Release_x64/MinGW_64b-Windows/RouteMergeDialog.o
-build/Release_x64/MinGW_64b-Windows/SettingsDialog.o
-build/Release_x64/MinGW_64b-Windows/StatusWindow.o
-build/Release_x64/MinGW_64b-Windows/UnsafeModeDialog.o
 build/Release_x64/MinGW_64b-Windows/EditFileNameDialog.o
 build/Release_x64/MinGW_64b-Windows/Eng.o
 build/Release_x64/MinGW_64b-Windows/EngInfoWidget.o
@@ -81,6 +72,7 @@ build/Release_x64/MinGW_64b-Windows/HazardObj.o
 build/Release_x64/MinGW_64b-Windows/HeightWindow.o
 build/Release_x64/MinGW_64b-Windows/ImageLib.o
 build/Release_x64/MinGW_64b-Windows/Intersections.o
+build/Release_x64/MinGW_64b-Windows/Launcher.o
 build/Release_x64/MinGW_64b-Windows/LevelCrObj.o
 build/Release_x64/MinGW_64b-Windows/LoadWindow.o
 build/Release_x64/MinGW_64b-Windows/MapData.o
@@ -107,6 +99,7 @@ build/Release_x64/MinGW_64b-Windows/PlatformObj.o
 build/Release_x64/MinGW_64b-Windows/PlayActivitySelectWindow.o
 build/Release_x64/MinGW_64b-Windows/Pointer3d.o
 build/Release_x64/MinGW_64b-Windows/PoleObj.o
+build/Release_x64/MinGW_64b-Windows/PolyForestObj.o
 build/Release_x64/MinGW_64b-Windows/ProceduralMstsDyntrack.o
 build/Release_x64/MinGW_64b-Windows/ProceduralShape.o
 build/Release_x64/MinGW_64b-Windows/PropertiesAbstract.o
@@ -117,9 +110,11 @@ build/Release_x64/MinGW_64b-Windows/PropertiesConsist.o
 build/Release_x64/MinGW_64b-Windows/PropertiesDyntrack.o
 build/Release_x64/MinGW_64b-Windows/PropertiesForest.o
 build/Release_x64/MinGW_64b-Windows/PropertiesGroup.o
+build/Release_x64/MinGW_64b-Windows/PropertiesHazard.o
 build/Release_x64/MinGW_64b-Windows/PropertiesLevelCr.o
 build/Release_x64/MinGW_64b-Windows/PropertiesPickup.o
 build/Release_x64/MinGW_64b-Windows/PropertiesPlatform.o
+build/Release_x64/MinGW_64b-Windows/PropertiesPolyForest.o
 build/Release_x64/MinGW_64b-Windows/PropertiesRuler.o
 build/Release_x64/MinGW_64b-Windows/PropertiesSiding.o
 build/Release_x64/MinGW_64b-Windows/PropertiesSignal.o
@@ -145,12 +140,14 @@ build/Release_x64/MinGW_64b-Windows/RouteEditorClient.o
 build/Release_x64/MinGW_64b-Windows/RouteEditorGLWidget.o
 build/Release_x64/MinGW_64b-Windows/RouteEditorServer.o
 build/Release_x64/MinGW_64b-Windows/RouteEditorWindow.o
+build/Release_x64/MinGW_64b-Windows/RouteMergeDialog.o
 build/Release_x64/MinGW_64b-Windows/Ruch.o
 build/Release_x64/MinGW_64b-Windows/RulerObj.o
 build/Release_x64/MinGW_64b-Windows/SFile.o
 build/Release_x64/MinGW_64b-Windows/SFileC.o
 build/Release_x64/MinGW_64b-Windows/SFileX.o
 build/Release_x64/MinGW_64b-Windows/Service.o
+build/Release_x64/MinGW_64b-Windows/SettingsDialog.o
 build/Release_x64/MinGW_64b-Windows/Shader.o
 build/Release_x64/MinGW_64b-Windows/ShapeHierarchyInfo.o
 build/Release_x64/MinGW_64b-Windows/ShapeHierarchyWindow.o
@@ -182,6 +179,7 @@ build/Release_x64/MinGW_64b-Windows/SpeedPost.o
 build/Release_x64/MinGW_64b-Windows/SpeedPostDAT.o
 build/Release_x64/MinGW_64b-Windows/SpeedpostObj.o
 build/Release_x64/MinGW_64b-Windows/StaticObj.o
+build/Release_x64/MinGW_64b-Windows/StatusWindow.o
 build/Release_x64/MinGW_64b-Windows/TDB.o
 build/Release_x64/MinGW_64b-Windows/TDBClient.o
 build/Release_x64/MinGW_64b-Windows/TFile.o
@@ -218,6 +216,7 @@ build/Release_x64/MinGW_64b-Windows/TransformWorldObjDialog.o
 build/Release_x64/MinGW_64b-Windows/Trk.o
 build/Release_x64/MinGW_64b-Windows/TrkWindow.o
 build/Release_x64/MinGW_64b-Windows/Undo.o
+build/Release_x64/MinGW_64b-Windows/UnsafeModeDialog.o
 build/Release_x64/MinGW_64b-Windows/UnsavedDialog.o
 build/Release_x64/MinGW_64b-Windows/UriImageDrawThread.o
 build/Release_x64/MinGW_64b-Windows/Vector2f.o
@@ -247,12 +246,6 @@ build/Release_x64/MinGW_64b-Windows/moc_ConEditorWindow.o
 build/Release_x64/MinGW_64b-Windows/moc_ConInfoWidget.o
 build/Release_x64/MinGW_64b-Windows/moc_ConListWidget.o
 build/Release_x64/MinGW_64b-Windows/moc_ConUnitsWidget.o
-build/Release_x64/MinGW_64b-Windows/moc_PropertiesHazard.o
-build/Release_x64/MinGW_64b-Windows/moc_PropertiesPolyForest.o
-build/Release_x64/MinGW_64b-Windows/moc_RouteMergeDialog.o
-build/Release_x64/MinGW_64b-Windows/moc_SettingsDialog.o
-build/Release_x64/MinGW_64b-Windows/moc_StatusWindow.o
-build/Release_x64/MinGW_64b-Windows/moc_UnsafeModeDialog.o
 build/Release_x64/MinGW_64b-Windows/moc_EditFileNameDialog.o
 build/Release_x64/MinGW_64b-Windows/moc_EngInfoWidget.o
 build/Release_x64/MinGW_64b-Windows/moc_EngListWidget.o
@@ -282,9 +275,11 @@ build/Release_x64/MinGW_64b-Windows/moc_PropertiesConsist.o
 build/Release_x64/MinGW_64b-Windows/moc_PropertiesDyntrack.o
 build/Release_x64/MinGW_64b-Windows/moc_PropertiesForest.o
 build/Release_x64/MinGW_64b-Windows/moc_PropertiesGroup.o
+build/Release_x64/MinGW_64b-Windows/moc_PropertiesHazard.o
 build/Release_x64/MinGW_64b-Windows/moc_PropertiesLevelCr.o
 build/Release_x64/MinGW_64b-Windows/moc_PropertiesPickup.o
 build/Release_x64/MinGW_64b-Windows/moc_PropertiesPlatform.o
+build/Release_x64/MinGW_64b-Windows/moc_PropertiesPolyForest.o
 build/Release_x64/MinGW_64b-Windows/moc_PropertiesRuler.o
 build/Release_x64/MinGW_64b-Windows/moc_PropertiesSiding.o
 build/Release_x64/MinGW_64b-Windows/moc_PropertiesSignal.o
@@ -305,6 +300,8 @@ build/Release_x64/MinGW_64b-Windows/moc_RouteEditorClient.o
 build/Release_x64/MinGW_64b-Windows/moc_RouteEditorGLWidget.o
 build/Release_x64/MinGW_64b-Windows/moc_RouteEditorServer.o
 build/Release_x64/MinGW_64b-Windows/moc_RouteEditorWindow.o
+build/Release_x64/MinGW_64b-Windows/moc_RouteMergeDialog.o
+build/Release_x64/MinGW_64b-Windows/moc_SettingsDialog.o
 build/Release_x64/MinGW_64b-Windows/moc_ShapeHierarchyWindow.o
 build/Release_x64/MinGW_64b-Windows/moc_ShapeInfoWidget.o
 build/Release_x64/MinGW_64b-Windows/moc_ShapeTexturesWindow.o
@@ -315,6 +312,7 @@ build/Release_x64/MinGW_64b-Windows/moc_ShapeViewerWindow.o
 build/Release_x64/MinGW_64b-Windows/moc_SignalWindow.o
 build/Release_x64/MinGW_64b-Windows/moc_SignalWindowLink.o
 build/Release_x64/MinGW_64b-Windows/moc_StaticObj.o
+build/Release_x64/MinGW_64b-Windows/moc_StatusWindow.o
 build/Release_x64/MinGW_64b-Windows/moc_Terrain.o
 build/Release_x64/MinGW_64b-Windows/moc_TerrainClient.o
 build/Release_x64/MinGW_64b-Windows/moc_TerrainTools.o
@@ -325,5 +323,6 @@ build/Release_x64/MinGW_64b-Windows/moc_TextEditDialog.o
 build/Release_x64/MinGW_64b-Windows/moc_TrainNetworkEng.o
 build/Release_x64/MinGW_64b-Windows/moc_TransformWorldObjDialog.o
 build/Release_x64/MinGW_64b-Windows/moc_TrkWindow.o
+build/Release_x64/MinGW_64b-Windows/moc_UnsafeModeDialog.o
 build/Release_x64/MinGW_64b-Windows/moc_UnsavedDialog.o
 build/Release_x64/MinGW_64b-Windows/moc_UriImageDrawThread.o

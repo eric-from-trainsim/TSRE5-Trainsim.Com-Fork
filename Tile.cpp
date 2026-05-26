@@ -355,7 +355,7 @@ void Tile::load() {
             data->off = offset;
        }
     }
-    if(Game::debugOutput) qDebug() << "tile302: " << obiekty.size();
+    // if(Game::debugOutput) qDebug() << "tile302: " << obiekty.size();
     loaded = 0;
     wczytajObiekty();
     checkForErrors();

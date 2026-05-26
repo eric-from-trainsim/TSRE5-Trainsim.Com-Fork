@@ -1,4 +1,5 @@
 #include "Launcher.h"
+#include "Game.h"
 #include <QPixmap>
 #include <QVBoxLayout>
 #include <QLabel>
@@ -7,7 +8,7 @@
 QString Launcher::getSelection() {
     // 1. Switch to a standard QDialog
     QDialog diary; 
-    diary.setWindowTitle("TSRE 8.006 Launcher");
+    diary.setWindowTitle("TSRE " + Game::AppVersion   + "  Launcher");
     
     // 2. Main vertical layout for the whole window
     QVBoxLayout *mainLayout = new QVBoxLayout(&diary);

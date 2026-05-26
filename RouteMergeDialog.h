@@ -9,32 +9,16 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 
-class RouteMergeDialog : public QDialog
-{
+
+class RouteMergeDialog : public QDialog {
     Q_OBJECT
-
 public:
-    RouteMergeDialog(QWidget *parent = nullptr);
-    ~RouteMergeDialog();
-
-    bool getCheckBox1Value() const { return mergeOption1; }
-    bool getCheckBox2Value() const { return mergeOption2; }
-    bool getCheckBox3Value() const { return mergeOption3; }
-
+    explicit RouteMergeDialog(QWidget *parent = nullptr);
 private:
-    QCheckBox *checkBox1;
-    QCheckBox *checkBox2;
-    QCheckBox *checkBox3;
-    QLineEdit label1;
-    QPushButton *okButton;
-    QPushButton *cancelButton;
-
-    bool mergeOption1;
-    bool mergeOption2;
-    bool mergeOption3;
-
-private slots:
-
+    // ALL UI ELEMENTS MUST BE POINTERS
+    QLineEdit *rmdlabel1; 
+    QCheckBox *rmdcheckBox0, *rmdcheckBox1, *rmdcheckBox2, *rmdcheckBox3, *rmdcheckBox4;
+    QPushButton *rmdokButton, *rmdcancelButton;
 };
 
 #endif // ROUTEMERGEDIALOG_H

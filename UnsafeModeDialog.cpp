@@ -14,7 +14,7 @@
 
 UnsafeModeDialog::UnsafeModeDialog(QWidget *parent) : QDialog(parent)
 {
-    setWindowTitle("Route Merge Options");
+    setWindowTitle("Unsafe Mode Options");
     this->setFixedSize(500, 350);
     
     // Create checkboxes

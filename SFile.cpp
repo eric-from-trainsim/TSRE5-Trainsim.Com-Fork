@@ -309,7 +309,7 @@ void SFile::load() {
                                 animations.push_back(Animation());
                                 animations.back().loadX(data);
                                 if(animations.size() > 0){
-                                    if(Game::debugOutput) qDebug() << "Sfile306:" << animations[0].node.size();
+                                    // if(Game::debugOutput) qDebug() << "Sfile306:" << animations[0].node.size();
                                            
                                     /*for(int i = 0; i < animations[0].node.size(); i++){
                                         qDebug() << animations[0].node[i].linearKey.size();

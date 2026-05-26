@@ -75,7 +75,6 @@ public:
     WorldObj* updateWorldObjData(FileBuffer *data);
     void mergeRoute(QString route2Name, float offsetX, float offsetY, float offsetZ);
     void confirmMerge();
-    void confirmUnsafe();
 
     WorldObj* getObj(int x, int z, int id);
     WorldObj* findNearestObj(int x, int z, float *pos);
@@ -166,7 +165,8 @@ public:
     static QStringList staticFlagList;    
     void ListFiles();
     void RebuildTDB();
-
+    void confirmUnsafe();
+    void ResetRouteDatabaseFiles();
     
 signals:
     void objectSelected(GameObj* obj);
