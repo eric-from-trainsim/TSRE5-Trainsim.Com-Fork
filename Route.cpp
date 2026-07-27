@@ -98,6 +98,9 @@ void Route::load(){
          confirmMerge();
     }
     
+    if(Game::UnsafeMode == true){
+        Route::confirmUnsafe();
+    }
   
     
     qDebug() << "# Load Route";
@@ -154,11 +157,6 @@ void Route::load(){
         preloadWFiles(Game::gui);
     }
 
-    
-    
-    if(Game::UnsafeMode == true){
-        Route::confirmUnsafe();
-    }
     
     if((Game::UnsafeMode == true) and (Game::routeRebuildTDB == true))
     { 
@@ -687,6 +685,11 @@ void Route::loadActivities(){
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList()<<"*.act");
     foreach(QString actfile, dir.entryList()){
+        QFileInfo fileInfo(dir.absoluteFilePath(actfile));
+        if(fileInfo.size() < 100) {  
+            qDebug() << "skipped " << actfile << " (Size: " << fileInfo.size() << " bytes)"; 
+            continue; 
+        }
         activityId.push_back(ActLib::AddAct(dir.path(), actfile));
     }
     
@@ -705,6 +708,11 @@ void Route::loadServices(){
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList()<<"*.srv");
     foreach(QString actfile, dir.entryList()){
+        QFileInfo fileInfo(dir.absoluteFilePath(actfile));
+        if(fileInfo.size() < 100) {  
+            qDebug() << "skipped " << actfile << " (Size: " << fileInfo.size() << " bytes)"; 
+            continue; 
+        }
         int id = ActLib::AddService(dir.path(), actfile);
         //service.push_back(ActLib::Services[id]);
     }
@@ -720,6 +728,11 @@ void Route::loadTraffic(){
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList()<<"*.trf");
     foreach(QString actfile, dir.entryList()){
+        QFileInfo fileInfo(dir.absoluteFilePath(actfile));
+        if(fileInfo.size() < 100) {  
+            qDebug() << "skipped " << actfile << " (Size: " << fileInfo.size() << " bytes)"; 
+            continue; 
+        }
         int id = ActLib::AddTraffic(dir.path(), actfile);
         //traffic.push_back(ActLib::Traffics[id]);
     }
@@ -734,6 +747,11 @@ void Route::loadPaths(){
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList()<<"*.pat");
     foreach(QString actfile, dir.entryList()){
+        QFileInfo fileInfo(dir.absoluteFilePath(actfile));
+        if(fileInfo.size() < 100) {  
+            qDebug() << "skipped " << actfile << " (Size: " << fileInfo.size() << " bytes)"; 
+            continue; 
+        }
         int id = ActLib::AddPath(dir.path(), actfile);
         if(!path.contains(ActLib::Paths[id]))
             path.push_back(ActLib::Paths[id]);
@@ -2326,6 +2344,7 @@ void Route::save() {
         if(p->isModified())
             p->save();
     }*/
+    updateGameRouteFolderTime();  
 }
 
 void Route::createNewPaths() {
@@ -2614,9 +2633,17 @@ void Route::RebuildTDB(){
                     addToTDBIfNotExist(wObj);
 
                    
-                } else qDebug() << "Skipping " << wObj->fileName << " " << wObj->type ; 
-            }
-            
+                } else if(
+                        wObj->type == "speedpost" ||
+                        wObj->type == "pickup" ||
+                        wObj->type == "levelcr" ||
+                        wObj->type == "signal" )
+                    {
+                        wObj->type = "Static";
+                        wObj->setModified();
+                    }                
+                else qDebug() << "Skipping " << wObj->fileName << " " << wObj->type ; 
+            }            
         }
             
     }
@@ -2632,6 +2659,8 @@ void Route::ResetRouteDatabaseFiles() {
     QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd-hhmm");
     QString baseFolder = Game::root + "/routes/" + Game::routeName + "/";
     QString worldFolder = baseFolder + "world/";
+    QProgressDialog *progress = NULL;
+    int pi = 0;        
     
     QStringList extensions = {".tdb", ".rdb"};
     for (const QString& ext : extensions) {
@@ -2663,6 +2692,35 @@ void Route::ResetRouteDatabaseFiles() {
         newFile.close();              
     }
     
+    extensions.clear();
+    extensions.append(".rit");
+    extensions.append(".tit");
+    
+    for (const QString& ext : extensions) {
+        QString sourcePath = baseFolder + Game::routeName + ext;
+        QFile sourceFile(sourcePath);           
+        qDebug() << "Renaming Files :" << sourcePath;
+        // 1. Handle Backup
+        if (sourceFile.exists()) {
+            QString backupPath = sourcePath + "." + timestamp + ".bkup";
+            if (!sourceFile.copy(backupPath)) {
+                qWarning() << "Failed to create backup for:" << sourcePath;
+                return;
+            }
+        }
+
+        // 2. Create/Overwrite the new file
+        QFile newFile(sourcePath);
+        if (!newFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            qWarning() << "Failed to open for writing:" << sourcePath;
+            return;
+        }
+
+        QTextStream out(&newFile);
+        out << "SIMISA@@@@@@@@@@JINX0T0t______\n\n";        
+        newFile.close();              
+    }
+
     QDir dir(worldFolder);
     QStringList filters;
     filters << "*.w";
@@ -2672,10 +2730,19 @@ void Route::ResetRouteDatabaseFiles() {
     qDebug() << "Copying Folder :" << worldFolder;
 
     QFileInfoList fileList = dir.entryInfoList();
+    progress = new QProgressDialog("Backing Up World Objects ...", "", 0, fileList.size());
+    progress->setWindowModality(Qt::WindowModal);
+    progress->setCancelButton(NULL);
+    progress->setWindowFlags(Qt::CustomizeWindowHint);
+    progress->show();
+    
 
     for (const QFileInfo &fileInfo : fileList) {
         QString sourcePath = fileInfo.absoluteFilePath();
-
+        if(progress != NULL){
+            progress->setValue((++pi));
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+        }
         // Construct destination: filename + timestamp + .bkup
         QString backupPath = sourcePath + "." + timestamp + ".bkup";
 
@@ -2684,7 +2751,9 @@ void Route::ResetRouteDatabaseFiles() {
         } else {
             qDebug() << "Successfully backed up:" << fileInfo.fileName();
         }
-    } 
+    }
+    if(progress != NULL)
+    delete progress;
 }
 
 
@@ -2698,6 +2767,45 @@ void Route::confirmUnsafe() {
     else
         {
             Game::UnsafeMode = false;
-            qDebug() << "Unsafe Mode Disabled" ;
+            Game::routeRebuildTDB = false;
+            qDebug() << "Unsafe Mode Disabled" ;            
         }
+}
+
+void Route::updateGameRouteFolderTime()
+{
+    // 1. Construct the target path: Game::root + "/routes/" + Game::route
+    QString targetFolderPath = Game::root + "/routes/" + Game::route;
+
+    QDir directory(targetFolderPath);
+    if (!directory.exists()) {
+        qWarning() << "Target route directory does not exist:" << targetFolderPath;
+        return;
+    }
+
+    // 2. Grab the current system time and format the filename
+    // dd -> Day (07), MMM -> Short Month Name (Jun), hh -> Hour, mm -> Minute
+    QDateTime currentTime = QDateTime::currentDateTime();
+    QString timeString = currentTime.toString("ddMMM-hhmm");
+    QString tempFileName = QString("tsre-save-%1.txt").arg(timeString);
+    
+    // 3. Combine the directory path with the temporary filename
+    QString tempFilePath = directory.filePath(tempFileName);
+    QFile tempFile(tempFilePath);
+
+    // 4. Open the file to create it, then immediately close and remove it
+    if (tempFile.open(QIODevice::WriteOnly)) {
+        tempFile.close();
+        
+        if (directory.remove(tempFileName)) {
+            qDebug() << "Successfully forced route folder mtime update via temp file:" << tempFileName;
+            return;
+        } else {
+            qWarning() << "Temp file created, but failed to delete:" << tempFilePath;
+            return;
+        }
+    } else {
+        qWarning() << "Failed to create temporary file to force mtime update:" << tempFilePath;
+        return;
+    }
 }

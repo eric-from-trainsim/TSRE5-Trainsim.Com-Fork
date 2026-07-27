@@ -40,7 +40,7 @@
 //////// Version
 //////////////////////////////////
 
-QString Game::AppVersion = "Trainsim.Com Fork v0.8.006h";  // over-ride from main.cpp
+QString Game::AppVersion = "Trainsim.Com Fork v0.8.006m";  // over-ride from main.cpp
 
 
 bool Game::ServerMode = false;
@@ -249,11 +249,14 @@ bool Game::reload;
 
 QString Game::MapAPIKey = "";
 QString Game::GoogleImageMapURL = "http://maps.googleapis.com/maps/api/staticmap?center={lat},{lon}&zoom={zoom}&size={res}x{res}&maptype=satellite&key=";
-QString Game::GoogleAPIKey = "";
+QString Game::GoogleMapAPIKey = "";
 int Game::GoogleImageMapsZoomOffset = 0;        
 QString Game::MapBoxImageMapURL = "https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/{lon},{lat},{zoom}/{res}x{res}?access_token=";
 int Game::MapBoxImageMapsZoomOffset = -1;        
-QString Game::MapBoxAPIKey = "";
+QString Game::MapBoxMapAPIKey = "";
+
+int Game::MapOffsetNS = 0;
+int Game::MapOffsetEW = 0;
 
 
 bool Game::imageSubstitution = true;
@@ -276,6 +279,7 @@ bool Game::routeMergeTDB = false;
 bool Game::routeMergeRDB = false;
 bool Game::routeMergeTerrtex = false;
 bool Game::routeRebuildTDB = false;
+bool Game::expressMode = false;
 
 int Game::rnp = 7;  //// can be 8
 
@@ -848,23 +852,49 @@ QString formattedLine = QString("##  %1 Log File %2  ##")
         if(setname =="texturequality"){
             textureQuality = setval.toInt();
         }
+
         if(setname =="imagemapsurl"){
             imageMapsUrl = args[1].trimmed();
         }        
+
         
-        if(setname =="imagemapszoomoffset"){
-            imageMapsZoomOffset = setval.toInt();
-        }
-        
-        if(setname =="mapengine"){
-            mapEngine = args[1].trimmed();
+        if(setname =="googlemapapikey"){
+            Game::GoogleMapAPIKey = args[1].trimmed();
         }        
-        
+
+        if(setname =="mapboxmapapikey"){
+            Game::MapBoxMapAPIKey = args[1].trimmed();
+        }        
+
+        if(setname =="googleimagemapurl"){
+            Game::GoogleImageMapURL = args[1].trimmed();
+        }        
+
+
+        if(setname =="mapboximagemapurl"){
+            Game::MapBoxImageMapURL = args[1].trimmed();
+        }
+
+        if(setname =="imagemapszoomoffset"){
+            Game::imageMapsZoomOffset = args[1].toInt();
+        }                                
+            
+        if(setname =="mapengine"){
+            Game::mapEngine = args[1].trimmed();
+        }                
         
         if(setname =="mapimageresolution"){
             mapImageResolution = setval.toInt();
         }
- 
+
+        if(setname =="expressmode"){
+            if((setval == "true") or (setval == "1") or (setval == "on"))
+                expressMode = true;
+            else
+                expressMode = false; 
+        }
+        
+        
         if(setname =="camerasticktoterrain"){
             if((setval == "true") or (setval == "1") or (setval == "on"))
                 cameraStickToTerrain = true;
@@ -1126,7 +1156,7 @@ QString formattedLine = QString("##  %1 Log File %2  ##")
 
         if(setname == "preloadtextures" ) 
             {
-              if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "Prelod Found" << setval;
+              if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]" << "Preload Found" << setval;
               preloadTextures = setval.split(",") ;
             }
                 
@@ -1198,10 +1228,36 @@ QString formattedLine = QString("##  %1 Log File %2  ##")
         infobox.setFixedWidth(150);
         infobox.exec();
     }
-
-
     
+    /// Wrapup
+    
+    if(Game::mapEngine.toLower() == "google")
+    {
+        Game::MapAPIKey = Game::GoogleMapAPIKey;
+        Game::imageMapsUrl = Game::GoogleImageMapURL;
+        Game::imageMapsZoomOffset = Game::GoogleImageMapsZoomOffset;
+    }
+
+    if(Game::mapEngine.toLower() == "mapbox")
+    {
+        Game::MapAPIKey = Game::MapBoxMapAPIKey;
+        Game::imageMapsUrl = Game::MapBoxImageMapURL;
+        Game::imageMapsZoomOffset = Game::MapBoxImageMapsZoomOffset;        
+    }
+
+    if(Game::expressMode == true)    
+    {
+        Game::loadAllWFiles = false;
+        Game::writeEnabled = false;
+        Game::writeTDB = false;
+        Game::autoFix = false;
+        
+        
+    }
 }
+
+
+
 /*
 bool Game::loadRouteEditor(){
     

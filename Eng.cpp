@@ -206,14 +206,37 @@ void Eng::load(){
             continue;
         }               
         if (sh == ("include")) {
+
+         
             QString incPath = ParserX::GetStringInside(data).toLower();
-            QString incPathb = ParserX::GetStringInside(data).toLower();
-            incPathb = incPathb.replace("../","/"); //// EFO trying to fix older files - will it break newer?
+            incPath = incPath.replace("\\","/");
+            QString incPathb = incPath;
+            QString incPathc = incPath;
+            incPathb = incPathb.replace("/..","/"); //// EFO trying to fix older files - will it break newer?
+            incPathc = incPathb.replace("/../..","/.."); //// EFO trying to fix older files - will it break newer?
+            incPathc = incPathc.replace("/../..","/.."); //// EFO trying to fix older files - will it break newer?
+
+            
             ParserX::SkipToken(data);
+            if(Game::extendedDebug)            
+            {
+                qDebug() << "trying include path:" << incPath;
+
+                // Only print if the path is actually different and not empty
+                if(incPathb != incPath)             qDebug() << "trying alt include path:" << incPathb;            
+                if(incPathc != incPath && incPathc != incPathb) qDebug() << "trying alt include path:" << incPathc;            
+            }
+
             if(data->insertFile(incpath + "/" + incPath, mstsincpath + "/" + incPath, &loadedPath))   /// legacy path
                 addToFileList(loadedPath);
-            if(data->insertFile(incpath + "/" + incPathb, mstsincpath + "/" + incPathb, &loadedPath))  //// alternate path
+
+            // C++ idiomatic comparison using != and the standard '&&' operator
+            if((incPathb != incPath) && (data->insertFile(incpath + "/" + incPathb, mstsincpath + "/" + incPathb, &loadedPath)))  //// alternate path
                 addToFileList(loadedPath);
+
+            if((incPathc != incPath) && (incPathc != incPathb) && (data->insertFile(incpath + "/" + incPathc, mstsincpath + "/" + incPathc, &loadedPath)))  //// alternate path
+                addToFileList(loadedPath);
+            
               //qDebug() << "eng 186 parsing: " << loadedPath;
             continue;
         }
@@ -226,14 +249,33 @@ void Eng::load(){
                 //qDebug() << sh;
                 if (sh == ("include")) {
                     QString incPath = ParserX::GetStringInside(data).toLower();
-                    QString incPathb = ParserX::GetStringInside(data).toLower();
-                    incPathb = incPathb.replace("../","/"); //// EFO trying to fix older files - will it break newer?
+                    incPath = incPath.replace("\\","/");
+                    QString incPathb = incPath;
+                    QString incPathc = incPath;    
+                    incPathb = incPathb.replace("/..","/"); //// EFO trying to fix older files - will it break newer?                        
+                    incPathc = incPathc.replace("/../..","/"); //// EFO trying to fix older files - will it break newer?
+                    incPathc = incPathc.replace("/../..","/"); //// EFO trying to fix older files - will it break newer?
+                    
                     ParserX::SkipToken(data);
-                    if(data->insertFile(incpath + "/" + incPath, mstsincpath + "/" + incPath, &loadedPath))
+                    
+                    if(Game::extendedDebug)            
+                    {
+                        qDebug() << "trying include path:" << incPath;
+
+                        // Only print if the path is actually different and not empty
+                        if(incPathb != incPath)             qDebug() << "trying alt include path:" << incPathb;            
+                        if(incPathc != incPath && incPathc != incPathb) qDebug() << "trying alt include path:" << incPathc;            
+                    }
+
+                    if(data->insertFile(incpath + "/" + incPath, mstsincpath + "/" + incPath, &loadedPath))   /// legacy path
                         addToFileList(loadedPath);
-                    if(data->insertFile(incpath + "/" + incPathb, mstsincpath + "/" + incPath, &loadedPath))
+
+                    // C++ idiomatic comparison using != and the standard '&&' operator
+                    if((incPathb != incPath) && (data->insertFile(incpath + "/" + incPathb, mstsincpath + "/" + incPathb, &loadedPath)))  //// alternate path
                         addToFileList(loadedPath);
-                    if(Game::debugOutput) qDebug() << "No handler to read this file just yet: " << loadedPath;
+
+                    if((incPathc != incPath) && (incPathc != incPathb) && (data->insertFile(incpath + "/" + incPathc, mstsincpath + "/" + incPathc, &loadedPath)))  //// alternate path
+                        addToFileList(loadedPath);//                    if(Game::debugOutput) qDebug() << "No handler to read this file just yet: " << loadedPath;
                       
                     //// Need to add a file read/parse routine here similar to the loadOR functionality     
                     ////    look for:    //// Load OR exception handling needed.  It's faux JSON
@@ -259,7 +301,7 @@ void Eng::load(){
                     continue;
                 }
                 if (sh == ("size")) {
-                    
+                    if(Game::extendedDebug){ if(loadedPath.contains(".inc")) qDebug() << "parsing include: size " << loadedPath; }
                     double convunitx = 1;
                     double convunity = 1;
                     double convunitz = 1;
@@ -365,6 +407,7 @@ void Eng::load(){
                     continue;
                 }
                 if (sh == ("mass")) {
+                    if(Game::extendedDebug){ if(loadedPath.contains(".inc")) qDebug() << "parsing include: mass " << loadedPath;}                                                   
                     float temp;
                     QString temp1;
                     QString temp2;
@@ -407,18 +450,22 @@ void Eng::load(){
                 }
                 if (sh == ("coupling")) {
                     coupling.push_back(Coupling());
+                    if(Game::extendedDebug){ if(loadedPath.contains(".inc")) qDebug() << "parsing include: coupling " << loadedPath; }
                     while (!((sh = ParserX::NextTokenInside(data).toLower()) == "")) {
                         if (sh == ("type")) {
+                            if(Game::extendedDebug){ if(loadedPath.contains(".inc")) qDebug() << "parsing include: coupling type " << loadedPath; }
                             coupling.back().type = ParserX::GetString(data);                            
                             ParserX::SkipToken(data);
                             continue;
                         }
                         if (sh == ("velocity")) {
+                            if(Game::extendedDebug){ if(loadedPath.contains(".inc")) qDebug() << "parsing include: coupling velocity" << loadedPath; }
                             coupling.back().velocity = ParserX::GetNumber(data);
                             ParserX::SkipToken(data);
                             continue;
                         }
                         if (sh == ("spring")) {
+                            if(Game::extendedDebug){ if(loadedPath.contains(".inc")) qDebug() << "parsing include: coupling spring" << loadedPath; } 
                             while (!((sh = ParserX::NextTokenInside(data).toLower()) == "")) {
                                 if (sh == ("r0")) {
                                     coupling.back().r0[0] = ParserX::GetNumberInside(data);
@@ -653,6 +700,7 @@ void Eng::load(){
                     continue;
                 }
                 if (sh == ("type")) {
+                    if(loadedPath.contains(".inc")) qDebug() << "parsing include: type " << loadedPath;                                                
                     engType = ParserX::GetString(data);
                     typeHash+="-"+engType;
                     //qDebug() << engType;

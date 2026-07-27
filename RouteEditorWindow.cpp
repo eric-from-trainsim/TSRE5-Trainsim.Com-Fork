@@ -668,6 +668,9 @@ void RouteEditorWindow::exitToLoadWindow(){
 void RouteEditorWindow::closeEvent(QCloseEvent * event ){
     QVector<QString> unsavedItems;
     glWidget->getUnsavedInfo(unsavedItems);
+
+    qDebug() << " Listing out files.... ";    
+    QString dirpath = (Game::root + "/routes/" + Game::routeName + "/").toLower();
     
     /// EFO List missing shapes
     QFile file("./" + Game::route + "_missingShapes.txt");    
@@ -682,23 +685,70 @@ void RouteEditorWindow::closeEvent(QCloseEvent * event ){
         file.close();        
     }      
     
-    QString dirpath = (Game::root + "/routes/" + Game::routeName + "/").toLower();
-    QFile file2("./" + Game::route + "_missingTextures.txt");    
 
-    if (file2.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream out(&file2);
-        QStringList sortedFileList2 = Route::missingTex;
-        sortedFileList2.removeDuplicates(); 
-        sortedFileList2.sort();
+    file.setFileName("./" + Game::route + "_missingTextures.txt");    
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        QStringList sortedFileList = Route::missingTex;
+        sortedFileList.removeDuplicates(); 
+        sortedFileList.sort();
 
-        for (const QString& fileName : sortedFileList2) {
+        for (const QString& fileName : sortedFileList) {
             // Create a copy so we don't destroy the original list data
             QString shortfilename = fileName; 
             shortfilename = shortfilename.remove(dirpath, Qt::CaseInsensitive);
             out << shortfilename << "\n";
         }
-        file2.close();        
+        file.close();        
     }    
+
+    /// EFO List world shapes
+    file.setFileName("./" + Game::route + "_filesUsed.txt");
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        QStringList sortedFileList = Route::fileList;
+        sortedFileList.removeDuplicates(); 
+        sortedFileList.sort();        
+        for (const QString& fileName : sortedFileList) {
+            if(fileName.size() > 0) 
+            out << fileName << " \n";
+        }
+        file.close();
+    }  
+
+    
+    
+    /// EFO List track pieces
+    file.setFileName("./" + Game::route + "_trackUsed.txt");
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        QStringList sortedFileList = Route::trackList;
+        sortedFileList.removeDuplicates(); 
+        sortedFileList.sort();
+        for (const QString& fileName : sortedFileList) {
+            out << fileName << " \n";
+        }
+        file.close();
+    }  
+
+
+    /// EFO List static flags
+    file.setFileName("./" + Game::route + "_staticFlags.txt");
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        QStringList sortedFileList = Route::staticFlagList;
+        sortedFileList.removeDuplicates(); 
+        sortedFileList.sort();
+
+        for (const QString& fileName : sortedFileList) {
+            out << fileName << " \n";
+        }
+        file.close();
+    }  
+
+    
+    
+    
 /*
     QFile file2("./" + Game::route + "_texturesUsed.txt");    
     if (file2.open(QIODevice::WriteOnly | QIODevice::Text)) {

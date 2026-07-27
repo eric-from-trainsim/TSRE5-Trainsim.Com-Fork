@@ -19,6 +19,7 @@
 #include <QIntValidator>
 #include <QCheckBox>
 #include <QDebug>
+#include <QTimer>
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
     if(Game::extendedDebug) qDebug() << "TRACE [" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << "]";
@@ -237,7 +238,7 @@ void SettingsDialog::setupUi() {
     addRow(l, "cameraSpeedMax", "number", "Camera Speed Max (Shift)", "");
     addRow(l, "cameraSpeedMin", "number", "Camera Speed Min (Ctrl)", "");
     addRow(l, "cameraSpeedStd", "number", "Camera Speed Normal", "");
-    addRow(l, "cameraStickToTerrain", "bool", "Stick to Terrain", "Toggle with / key");
+    addRow(l, "cameraStickToTerrain", "bool", "Camera Stick to Terrain", "Toggle with / key");
     addRow(l, "hudEnabled", "bool", "HUD Enabled", "");
     addRow(l, "hudScale", "number", "HUD Scale", "");
     addRow(l, "lockCamera", "bool", "Lock Camera", "Toggle with . key");
@@ -266,15 +267,20 @@ void SettingsDialog::setupUi() {
     addRow(l, "wireLineHeight", "number", "Wire Line Height", "");
 
     createScrollTab(l, tabs, "Maps");
-    addRow(l, "mapengine", "string", "Map Engine", "");
+    addRow(l, "mapengine", "string", "Map Engine", "Google or MapBox");
+    addRow(l, "MapOffsetNS", "Number", "+N/-S Offset in meters for maps", "Optional");
+    addRow(l, "MapOffsetEW", "Number", "+E/-W Offset in meters for maps", "Optional");
+    l->addItem(new QSpacerItem(20, 15, QSizePolicy::Minimum, QSizePolicy::Fixed));
     addRow(l, "MapboxImageMapURL", "string", "Mapbox URL", "");
     addRow(l, "MapboxImageMapsZoomOffset", "number", "Mapbox Zoom Offset", "");
     addRow(l, "MapboxMapAPIKey", "string", "Mapbox API Key", "");
+    l->addItem(new QSpacerItem(20, 15, QSizePolicy::Minimum, QSizePolicy::Fixed));
     addRow(l, "GoogleImageMapURL", "string", "Google URL", "");
     addRow(l, "GoogleMapAPIKey", "string", "Google API Key", "");
     addRow(l, "GoogleImageMapsZoomOffset", "number", "Google Zoom Offset", "Not presently needed");    
-    addRow(l, "imageMapsURL", "string", "Image Maps URL", "");
-    addRow(l, "MapAPIKey", "string", "General Map API Key", "");
+    l->addItem(new QSpacerItem(20, 15, QSizePolicy::Minimum, QSizePolicy::Fixed));  
+    addRow(l, "imageMapsURL", "string", "Image Maps URL", "Will be overridden if Map Engine is set");
+    addRow(l, "MapAPIKey", "string", "General Map API Key", "Will be overridden if Map Engine is set");
 
     createScrollTab(l, tabs, "Consist Editor");
     addRow(l, "ceWindowLayout", "string", "CE Layout", "C-Consists, 1-Main List, 2-Second List");
@@ -284,6 +290,62 @@ void SettingsDialog::setupUi() {
     addRow(l, "loadConsists", "bool", "Load Consists", "");
     addRow(l, "ortsEngEnable", "bool", "ORTS Eng Enable", "");
 
+    // --- ADDED SPACE AND LABEL ---
+    l->addItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Fixed)); // 2 rows high spacer
+    QLabel* sectionLabel = new QLabel("<b>ORTS Content Paths (to be saved to cerecent.txt)</b>");
+    l->addRow(sectionLabel); 
+    // -----------------------------    
+     
+    QFile cerecentFile("CERECENT.TXT");
+    QStringList recentPaths;
+    if (cerecentFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&cerecentFile);
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (!line.isEmpty()) recentPaths << line;
+        }
+        cerecentFile.close();
+    }
+    // Always add one blank entry so the user has a spot to add a new path
+    recentPaths << "" << "" << "" << "";
+    
+    for (int i = 0; i < recentPaths.size(); ++i) {
+        QString key = QString("recentPath_%1").arg(i);
+        addRow(l, key, "dir", QString("Recent Path %1").arg(i+1), "");
+
+        if (QLineEdit* le = qobject_cast<QLineEdit*>(valueWidgetMap[key])) {
+            le->setText(recentPaths[i]);
+        }
+    }    
+
+    // --- ADD CENTERED INDEPENDENT SAVE BUTTON ---
+    QWidget* buttonContainer = new QWidget();
+    QHBoxLayout* btnLayout = new QHBoxLayout(buttonContainer);
+    btnLayout->setContentsMargins(0, 5, 0, 5);
+
+    QPushButton* savePathsBtn = new QPushButton("Save Content Paths Only");
+    savePathsBtn->setFixedWidth(200);
+
+    // Add horizontal stretches to center the button
+    btnLayout->addStretch(1);
+    btnLayout->addWidget(savePathsBtn);
+    btnLayout->addStretch(1);
+
+    // Add the container to the form layout
+    l->addRow(buttonContainer);
+
+    connect(savePathsBtn, &QPushButton::clicked, this, [this, savePathsBtn]() {
+        saveRecentPaths();
+        savePathsBtn->clearFocus();
+
+        // Provide visual confirmation
+        QString originalText = savePathsBtn->text();
+        savePathsBtn->setText("Saved!");
+        QTimer::singleShot(2000, [savePathsBtn, originalText]() { 
+            savePathsBtn->setText(originalText); 
+        });
+    });
+    
     createScrollTab(l, tabs, "Multi-User");
     addRow(l, "fpsLimit", "number", "FPS Limit", "");
     addRow(l, "playerMode", "bool", "Player Mode", "");
@@ -324,6 +386,12 @@ void SettingsDialog::setupUi() {
             file.rename(backupName); 
         }
         save(setFileBase);        
+        saveRecentPaths(); 
+        QString originalText = checkSaveBtn->text();
+            checkSaveBtn->setText("Backup & Saved!");
+            QTimer::singleShot(2000, [checkSaveBtn, originalText]() { 
+                checkSaveBtn->setText(originalText); 
+            });        
         checkSaveBtn->clearFocus();
     });    
     
@@ -335,6 +403,13 @@ void SettingsDialog::setupUi() {
 
     connect(saveBtn, &QPushButton::clicked, this, [this, setFileNew, saveBtn]() { 
         save(setFileNew); 
+        saveRecentPaths(); // Ensure consistency
+        // Feedback logic
+        QString originalText = saveBtn->text();
+        saveBtn->setText("Saved!");
+        QTimer::singleShot(2000, [saveBtn, originalText]() { 
+            saveBtn->setText(originalText); 
+        });    
         saveBtn->clearFocus(); 
     });
     loadSettings();
@@ -453,6 +528,31 @@ void SettingsDialog::loadSettings() {
 }
 
 
+void SettingsDialog::saveRecentPaths() {
+    QFile file("CERECENT.TXT");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return;
+    QTextStream out(&file);
+
+    int i = 0;
+    while (true) {
+        // Construct the key as it was stored: lowercase
+        QString key = QString("recentpath_%1").arg(i); 
+        
+        // If the key isn't in the map, we've exhausted our list
+        if (!valueWidgetMap.contains(key)) break;
+
+        QLineEdit* le = qobject_cast<QLineEdit*>(valueWidgetMap[key]);
+        if (le) {
+            QString text = le->text().trimmed();
+            if (!text.isEmpty()) {
+                out << text << "\n";
+            }
+        }
+        i++;
+    }
+    file.close();
+}
+
 void SettingsDialog::updateWidgetValue(const QString& key, const QString& val) {
     QWidget* w = valueWidgetMap[key];
     if (!w) return;
@@ -511,7 +611,7 @@ QString SettingsDialog::getGameValue(const QString& key) {
         
         
         if (key == "googleimagemapurl") return Game::GoogleImageMapURL;
-        if (key == "googleapikey") return Game::GoogleAPIKey;                
+        if (key == "googlemapapikey") return Game::GoogleMapAPIKey;                
         if (key == "googleimagemapszoomoffset") return QString::number(Game::GoogleImageMapsZoomOffset);
 
         if (key == "hudenabled") return Game::hudEnabled ? "true" : "false";
@@ -538,11 +638,13 @@ QString SettingsDialog::getGameValue(const QString& key) {
         if (key == "mapapikey") return Game::MapAPIKey;                
         
         if (key == "mapboximagemapurl") return Game::MapBoxImageMapURL;
-        if (key == "mapboxapikey") return Game::MapBoxAPIKey;                
+        if (key == "mapboxmapapikey") return Game::MapBoxMapAPIKey;                
         if (key == "mapboximagemapszoomoffset") return QString::number(Game::MapBoxImageMapsZoomOffset);
 
         if (key == "mapengine") return Game::mapEngine;
         if (key == "mapimageresolution") return QString::number(Game::mapImageResolution);
+        if (key == "mapoffsetns") return QString::number(Game::MapOffsetNS);
+        if (key == "mapoffsetew") return QString::number(Game::MapOffsetEW);        
         if (key == "markerheight") return QString::number(Game::markerHeight);
         if (key == "markerlines") return Game::markerLines ? "true" : "false";
         if (key == "markertext") return QString::number(Game::markerText);

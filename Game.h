@@ -231,12 +231,13 @@ public:
     static int mapImageResolution; 
     static QString MapAPIKey;            
     static QString GoogleImageMapURL;
-    static QString GoogleAPIKey;
+    static QString GoogleMapAPIKey;
     static int GoogleImageMapsZoomOffset;        
     static QString MapBoxImageMapURL;
     static int MapBoxImageMapsZoomOffset;
-    static QString MapBoxAPIKey;    
-    
+    static QString MapBoxMapAPIKey;    
+    static int MapOffsetEW;
+    static int MapOffsetNS;
  
     
     static bool imageSubstitution;
@@ -263,6 +264,7 @@ public:
     static bool resetTools;
     static bool viewTRLabels;
     static float trackGap;
+    static bool expressMode;
 
 private:
     //static RouteEditorWindow* window;

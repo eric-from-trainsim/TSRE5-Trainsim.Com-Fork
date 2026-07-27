@@ -132,25 +132,59 @@ void FileBuffer::toUtf16(){
 bool FileBuffer::insertFile(QString incPath, QString alternativePath, QString* loaded){
     int i;
     QString sh;
-    incPath.replace("\\","/");
-    incPath.replace("//","/");
-    alternativePath.replace("\\","/");
-    alternativePath.replace("//","/");
+    
+    while(incPath.contains("\\")) {
+        incPath = incPath.replace("\\","/");
+    }
+    
+    while(incPath.contains("//")) {
+        incPath = incPath.replace("//","/");
+    }
+
+    while(alternativePath.contains("\\")) {
+        alternativePath = alternativePath.replace("\\","/");
+    }
+    
+    while(alternativePath.contains("//")) {
+        alternativePath = alternativePath.replace("//","/");
+    }
+
+    
     QFile file(incPath);
-    if (!file.open(QIODevice::ReadOnly)){
-        if(alternativePath.length() > 0){
+    if (!file.open(QIODevice::ReadOnly)) 
+    {
+        bool opened = false;
+
+        // Fallback 1: Try alternativePath if it exists
+        if (!alternativePath.isEmpty()) 
+        {
             incPath = alternativePath;
             file.setFileName(incPath);
-            if (!file.open(QIODevice::ReadOnly)){
-                 if(Game::debugOutput) qDebug() << __FILE__ << __LINE__ << incPath << "not exist";
-                return false;
+            if (file.open(QIODevice::ReadOnly)) {
+                opened = true;
             }
-        } else {
-             if(Game::debugOutput) qDebug() << __FILE__ << __LINE__ << incPath << "not exist";
+        }
+
+        // Fallback 2: If alternativePath failed (or didn't exist), try collapsing the parent directories
+        if (!opened && incPath.contains("/../..")) 
+        {
+            incPath.replace("/../..", "/..");
+            file.setFileName(incPath);
+            if (file.open(QIODevice::ReadOnly)) {
+                opened = true;
+            }
+        }
+
+        // If all attempts failed, log the error and exit
+        if (!opened) 
+        {
+            if (Game::debugOutput) {
+                qDebug() << __FILE__ << __LINE__ << incPath << " does not exist";
+            }
             return false;
         }
     }
-    if(Game::debugOutput) qDebug() << __FILE__ << __LINE__ << "Include file is found at this location: \t" << incPath;
+    if(Game::debugOutput) qDebug() << __FILE__ << __LINE__ << incPath << " does exist at this location \t" ;
     if(loaded != NULL){
         *loaded = incPath;
     }

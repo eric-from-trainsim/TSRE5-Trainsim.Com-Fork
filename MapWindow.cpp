@@ -34,12 +34,14 @@ MapWindow::MapWindow() : QDialog() {
     mapServices.push_back(new MapDataOSM());
 
     // EFO 
-    QString provider = "";    
-    if(Game::imageMapsUrl.toLower().contains("google")) 
+    QString provider = Game::mapEngine;    
+/*
+    if(Game::mapEngine.toLower().contains("google")) 
         provider = "Google "; 
-    if(Game::imageMapsUrl.toLower().contains("mapbox"))
+    if(Game::mapEngine.toLower().contains("mapbox"))
         provider = "MapBox "; 
-    
+    if(Game::mapEngine) 
+  */      
     // EFO hide if no provider
     if(provider.length() > 1)
     {

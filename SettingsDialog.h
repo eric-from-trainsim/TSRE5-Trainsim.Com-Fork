@@ -21,6 +21,7 @@ public:
 private:
     void setupUi();
     void updateWidgetValue(const QString& key, const QString& val);
+    void saveRecentPaths();
     QString getGameValue(const QString& key);
     
     QWidget* createScrollTab(QFormLayout*& layout, QTabWidget* tabs, const QString& title);

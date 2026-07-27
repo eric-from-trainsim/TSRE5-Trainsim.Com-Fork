@@ -188,7 +188,7 @@ WorldObj* WorldObj::createObj(int sh) {
 
 WorldObj* WorldObj::createObj(QString sh) {
     WorldObj* nowy;
-    if (sh == "static") {
+    if ((sh == "static") and (Game::expressMode == false)) {
         nowy = (WorldObj*) (new StaticObj());
         (nowy)->resPath = Game::root + "/routes/" + Game::route + "/shapes";
         (nowy)->typeID = (nowy)->sstatic;

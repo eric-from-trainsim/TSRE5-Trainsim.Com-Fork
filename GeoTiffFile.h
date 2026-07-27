@@ -29,4 +29,3 @@ private:
 };
 
 #endif	/* GEOTIFFFILE_H */
-

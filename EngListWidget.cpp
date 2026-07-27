@@ -181,11 +181,30 @@ void EngListWidget::addRndButtonSelected(){
 }
 
 bool EngListWidget::eventFilter(QObject *obj, QEvent *event) {
+    // 1. Prevent blocking PrintScreen, Ctrl+PrintScreen, or Alt+PrintScreen
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        
+        if (keyEvent->key() == Qt::Key_Print) {
+            // Check for No Modifier, Ctrl Modifier, or Alt Modifier
+            if (keyEvent->modifiers() == Qt::NoModifier || 
+                keyEvent->modifiers() == Qt::ControlModifier || 
+                keyEvent->modifiers() == Qt::AltModifier) {
+                
+                event->ignore(); // Signal that the app isn't consuming this key
+                return false;    // Pass it straight to the OS / parent window
+            }
+        }
+    }
+
+    // 2. Your existing double-click logic
     if (event->type() == QEvent::MouseButtonDblClick) {
-        QMouseEvent * mouseEvent = static_cast <QMouseEvent *> (event);
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() == Qt::LeftButton) {
             addEndButtonSelected(1);
         }
     }
+
+    // 3. Fallback to base class
     return QWidget::eventFilter(obj, event);
 }

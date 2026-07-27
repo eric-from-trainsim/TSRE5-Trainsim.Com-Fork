@@ -569,6 +569,10 @@ void TerrainTools::preloadTextures(){
     {
         foreach (QString val, Game::preloadTextures)
         {        
+            if (val.isEmpty()) {
+                qDebug() << "No preloaded textures defined";
+                continue; 
+            }            
             preloadTexTool(val);        
         }                
     }

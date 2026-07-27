@@ -231,6 +231,7 @@ int ActLib::LoadAllAct(QString gameRoot, bool gui){
     foreach(QString dirFile, dir.entryList()){
         if(dirFile == "." || dirFile == "..")   
             continue;
+        if(Game::debugOutput) qDebug() << "Route: " << dirFile;        
         
         dirFile += "/activities";
         //qDebug() <<dirFile;
@@ -240,7 +241,19 @@ int ActLib::LoadAllAct(QString gameRoot, bool gui){
         aDir.setFilter(QDir::Files);
         aDir.setNameFilters(QStringList()<<"*.act");
         foreach(QString actfile, aDir.entryList()){
-            //ActLib::AddAct(path+"/"+dirFile, actfile);
+            if(Game::debugOutput) qDebug() << "Activity: " << actfile;
+
+            QString fullFilePath = aDir.absoluteFilePath(actfile);
+            QFileInfo fileInfo(fullFilePath);
+
+            if(fileInfo.size() < 100){
+                if(Game::debugOutput) {
+                    qDebug() << "Skipping (Under 100 bytes): " << actfile << "Size:" << fileInfo.size();
+                }
+                continue; // Skip this file and move to the next one
+            } 
+            
+            ActLib::AddAct(path+"/"+dirFile, actfile);
             dirPaths.push_back(path+"/"+dirFile);
             actPaths.push_back(actfile);
         }
@@ -255,6 +268,7 @@ int ActLib::LoadAllAct(QString gameRoot, bool gui){
     }
     for(int i = 0; i < dirPaths.size(); i++){
         //qDebug() << path << dirFile <<"/"<< engfile;
+        if(Game::debugOutput) qDebug() << "Reading Activity: " << actPaths[i];
         ActLib::AddAct(dirPaths[i],actPaths[i]);
         if(progress != NULL){
             progress->setValue(i+1);

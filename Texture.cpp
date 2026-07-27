@@ -368,7 +368,7 @@ bool Texture::GLTextures(bool mipmaps) {
             for (int i = 0; i < width; i++)
                 imageData[i*bytesPerPixel + 3] = 0;
         }
-
+/*  coding out to reduce mipmap level
     tex = new unsigned int[1];
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
     
@@ -383,6 +383,35 @@ bool Texture::GLTextures(bool mipmaps) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_LINEAR_MIPMAP_LINEAR );
     } else {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_LINEAR );
+    }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    delete[] imageData;
+    imageData = NULL;
+    this->editable = false;
+    glLoaded = true;
+    return true;
+    */
+    
+    tex = new unsigned int[1];
+    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+    
+    glGenTextures(1, tex);
+    glBindTexture(GL_TEXTURE_2D, tex[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, type, width, height, 0, type, GL_UNSIGNED_BYTE, imageData);
+    
+    if(mipmaps){
+        f->glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        
+        // --- ADD THIS LINE TO FORCE LOWEST QUALITY/VRAM FOR DDS/TEXTURES ---
+        // 1 drops resolution by 50% (4x VRAM footprint reduction)
+        // 2 drops resolution by 75% (16x VRAM footprint reduction)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 1); 
+
+    } else {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     }
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

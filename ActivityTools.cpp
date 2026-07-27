@@ -224,7 +224,7 @@ ActivityTools::ActivityTools(QString name)
     label->setStyleSheet(QString("QLabel { color : ")+Game::StyleMainLabel+"; }");
     label->setContentsMargins(3,0,0,0);
     vbox->addWidget(label);
-    QPushButton *actSettingsOpen = new QPushButton("Open Settings ...");
+    QPushButton *actSettingsOpen = new QPushButton("Open Activity Settings ...");
     QObject::connect(actSettingsOpen, SIGNAL(released()), this, SLOT(actSettingsOpenEnabled()));
     vbox->addWidget(actSettingsOpen);
     

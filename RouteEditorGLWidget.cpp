@@ -65,15 +65,23 @@ m_zRot(0) {
 }
 
 
-
-
-
-bool RouteEditorGLWidget::eventFilter(QObject *object, QEvent *event){
-    if (event->type() == QEvent::FocusIn){
-        //qDebug() << "aaaaa";
-        bolckContextMenu = true;
+bool RouteEditorGLWidget::eventFilter(QObject *object, QEvent *event) {
+    // 1. Prevent blocking PrintScreen and Ctrl + PrintScreen
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        
+        if (keyEvent->key() == Qt::Key_Print) {
+            // Check if either no modifiers are pressed, OR if ONLY Ctrl is pressed
+            if (keyEvent->modifiers() == Qt::NoModifier || keyEvent->modifiers() == Qt::ControlModifier) {
+                // Explicitly ignore the event so it bubbles up to the OS
+                event->ignore(); 
+                return false; 
+            }
+        }
     }
-    return false;
+    
+    // Fallback: Pass the event on to the parent class or base implementation
+    return QWidget::eventFilter(object, event); 
 }
 
 RouteEditorGLWidget::~RouteEditorGLWidget() {
@@ -147,18 +155,18 @@ void RouteEditorGLWidget::timerEvent(QTimerEvent * event) {
        }
         
         /// try to send camera status every half second or so?
-        if (Game::lockCamera) emit updStatus(QString("camera"), QString("Camera Locked")); else emit updStatus(QString("camera"), QString("Camera Unlocked"));
-        if (Game::cameraStickToTerrain) emit updStatus(QString("camterr"), QString("Cam Terrain Locked")); else emit updStatus(QString("camterr"), QString("Cam Terrain Unlocked"));
+        if (Game::lockCamera) emit updStatus(QString("camera"), QString("Camera Locked (.)")); else emit updStatus(QString("camera"), QString("Camera Unlocked (.)"));
+        if (Game::cameraStickToTerrain) emit updStatus(QString("camterr"), QString("Cam Terrain Locked  (/)")); else emit updStatus(QString("camterr"), QString("Cam Terrain Unlocked  (/)"));
 
-        if(autoAddToTDB == true) emit updStatus(QString("autotdb"), QString("AutoTDB: ON")); else emit updStatus(QString("autotdb"), QString("AutoTDB: OFF"));  /// EFO Added to 
+        if(autoAddToTDB == true) emit updStatus(QString("autotdb"), QString("AutoTDB: ON (Ctrl-Q)")); else emit updStatus(QString("autotdb"), QString("AutoTDB: OFF (Ctrl-Q)" ));  /// EFO Added to 
         if(Game::writeTDB == false) emit updStatus(QString("autotdb"), QString("WriteTDB: OFF"));   /// EFO Added to 
-        if(stickPointerToTerrain == true) emit updStatus(QString("stickterr"), QString("StickToTerrain: ON")); else emit updStatus(QString("stickterr"), QString("StickToTerrain: OFF"));  /// EFO Added to 
-        if(resizeTool == true) emit updStatus(QString("resize"), QString("Resize: ON")); else emit updStatus(QString("resize"), QString("Resize: OFF"));  /// EFO Added to 
-        if(translateTool == true) emit updStatus(QString("translate"), QString("Translate: ON")); else emit updStatus(QString("translate"), QString("Resize: OFF"));  /// EFO Added to 
-        if(rotateTool == true) emit updStatus(QString("rotate"), QString("Rotate: ON")); else emit updStatus(QString("rotate"), QString("Rotate: OFF"));  /// EFO Added to         
+        if(stickPointerToTerrain == true) emit updStatus(QString("stickterr"), QString("StickToTerrain: ON  (Shft-Q)")); else emit updStatus(QString("stickterr"), QString("StickToTerrain: OFF  (Shft-Q)"));  /// EFO Added to 
+        if(resizeTool == true) emit updStatus(QString("resize"), QString("Resize: ON")); else emit updStatus(QString("resize"), QString("Resize: OFF (Y)"));  /// EFO Added to 
+        if(translateTool == true) emit updStatus(QString("translate"), QString("Translate: ON")); else emit updStatus(QString("translate"), QString("Translate: OFF (T)"));  /// EFO Added to 
+        if(rotateTool == true) emit updStatus(QString("rotate"), QString("Rotate: ON")); else emit updStatus(QString("rotate"), QString("Rotate: OFF (R)" ));  /// EFO Added to         
 
-        if(toolEnabled == "placeTool") emit updStatus(QString("place"), QString("Place: ON")); else emit updStatus(QString("place"), QString("Place: OFF"));  /// EFO Added to         
-        if(toolEnabled == "selectTool") emit updStatus(QString("select"), QString("Select: ON")); else emit updStatus(QString("select"), QString("Select: OFF"));  /// EFO Added to                 
+        if(toolEnabled == "placeTool") emit updStatus(QString("place"), QString("Place: ON")); else emit updStatus(QString("place"), QString("Place: OFF (Q)"));  /// EFO Added to         
+        if(toolEnabled == "selectTool") emit updStatus(QString("select"), QString("Select: ON")); else emit updStatus(QString("select"), QString("Select: OFF (E)"));  /// EFO Added to                 
         
         if(defaultPaintBrush->direction == 1) emit updStatus(QString("brushdir"), QString("Terrain Brush: +")); else emit updStatus(QString("brush"), QString("Terrain Brush: -"));  /// EFO Added to 
 
@@ -2453,6 +2461,7 @@ void RouteEditorGLWidget::showContextMenu(const QPoint & point) {
             }
             menu.addAction(defaultMenuActions["resetRot"]);
         }
+
         if (toolEnabled == "placeTool" || toolEnabled == "selectTool"){
             if(defaultMenuActions["resetVert"] == NULL){
                 defaultMenuActions["resetVert"] = new QAction(tr("Reset &Vertical"), this); 
@@ -2460,7 +2469,7 @@ void RouteEditorGLWidget::showContextMenu(const QPoint & point) {
             }
             menu.addAction(defaultMenuActions["resetVert"]);
         }
-        
+
         
         if (toolEnabled == "heightTool" || toolEnabled == "waterTerrTool" || toolEnabled == "gapsTerrainTool"){
             menu.addMenu(&menuTool);

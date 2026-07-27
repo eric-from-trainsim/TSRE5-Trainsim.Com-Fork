@@ -102,17 +102,17 @@ void StatusWindow::cameraButtonAction(bool val){
 
 void StatusWindow::recStatus(QString statName, QString statVal ){   
     // These get emitted from REGLW triggers and update here
-    if(statName.contains("camera"))    { status0.setText(statVal); if(statVal.endsWith("ON")) status0.setStyleSheet(statG); else status0.setStyleSheet(statS);  }
-    if(statName.contains("autotdb"))   { status1.setText(statVal); if(statVal.endsWith("ON")) status1.setStyleSheet(statG); else status1.setStyleSheet(statY);  }
+    if(statName.contains("camera"))    { status0.setText(statVal); if(statVal.contains("ON")) status0.setStyleSheet(statG); else status0.setStyleSheet(statS);  }
+    if(statName.contains("autotdb"))   { status1.setText(statVal); if(statVal.contains("ON")) status1.setStyleSheet(statG); else status1.setStyleSheet(statY);  }
     if(statName.contains("brushdir"))  { status2.setText(statVal); } 
-    if(statName.contains("resize"))    { status3.setText(statVal); if(statVal.endsWith("ON")) status3.setStyleSheet(statY); else status3.setStyleSheet(statS);  }    
-    if(statName.contains("select"))    { status4.setText(statVal); if(statVal.endsWith("ON")) status4.setStyleSheet(statG); else status4.setStyleSheet(statS);  } 
+    if(statName.contains("resize"))    { status3.setText(statVal); if(statVal.contains("ON")) status3.setStyleSheet(statY); else status3.setStyleSheet(statS);  }    
+    if(statName.contains("select"))    { status4.setText(statVal); if(statVal.contains("ON")) status4.setStyleSheet(statG); else status4.setStyleSheet(statS);  } 
     
-    if(statName.contains("camterr"))   { status5.setText(statVal); if(statVal.endsWith("Locked")) status5.setStyleSheet(statG); else status5.setStyleSheet(statY);  }    
-    if(statName.contains("stickterr")) { status6.setText(statVal); if(statVal.endsWith("ON")) status6.setStyleSheet(statG); else status6.setStyleSheet(statY);  }
-    if(statName.contains("rotate"))    { status7.setText(statVal); if(statVal.endsWith("ON")) status7.setStyleSheet(statY); else status7.setStyleSheet(statS);  }    
-    if(statName.contains("translate")) { status8.setText(statVal); if(statVal.endsWith("ON")) status8.setStyleSheet(statY); else status8.setStyleSheet(statS);  }    
-    if(statName.contains("place"))     { status9.setText(statVal); if(statVal.endsWith("ON")) status9.setStyleSheet(statG); else status9.setStyleSheet(statS);  }             
+    if(statName.contains("camterr"))   { status5.setText(statVal); if(statVal.contains("Locked")) status5.setStyleSheet(statG); else status5.setStyleSheet(statY);  }    
+    if(statName.contains("stickterr")) { status6.setText(statVal); if(statVal.contains("ON")) status6.setStyleSheet(statG); else status6.setStyleSheet(statY);  }
+    if(statName.contains("rotate"))    { status7.setText(statVal); if(statVal.contains("ON")) status7.setStyleSheet(statY); else status7.setStyleSheet(statS);  }    
+    if(statName.contains("translate")) { status8.setText(statVal); if(statVal.contains("ON")) status8.setStyleSheet(statY); else status8.setStyleSheet(statS);  }    
+    if(statName.contains("place"))     { status9.setText(statVal); if(statVal.contains("ON")) status9.setStyleSheet(statG); else status9.setStyleSheet(statS);  }             
     if(statName.contains("timer"))     { status10.setText(statVal + "m elapsed without Save"); if(statVal.toInt() > 10) status10.setStyleSheet(statY); else status10.setStyleSheet(statS);  }
     if(statName.contains("object"))    { if(statVal.size() > 0) {status11.setText(statVal + " Object Selected"); status11.setStyleSheet(statY); } else {status11.setText(statVal + ""); status11.setStyleSheet(statS);}  }
 }

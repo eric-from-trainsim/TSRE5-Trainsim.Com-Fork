@@ -53,6 +53,12 @@ GeoTools::GeoTools(QString name)
     label0->setStyleSheet(QString("QLabel { color : ")+Game::StyleMainLabel+"; }");
     vbox->addWidget(label0);
     vbox->addWidget(buttonTools["heightTileLoadTool"]);
+
+    label0 = new QLabel("Generate Missing Tile: Press B");
+    label0->setContentsMargins(3,0,0,0);
+    label0->setStyleSheet(QString("QLabel { color : ")+Game::StyleMainLabel+"; }");
+    vbox->addWidget(label0);
+
     
     label0 = new QLabel("Auto tile generation:");
     label0->setContentsMargins(3,0,0,0);

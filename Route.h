@@ -85,6 +85,7 @@ public:
     void createNewPaths();
     void createNew();
     bool checkTrackSectionDatabase();
+        
     void checkRouteDatabase();
     void loadMkrList();
     void createMkrPlaces();
@@ -167,6 +168,7 @@ public:
     void RebuildTDB();
     void confirmUnsafe();
     void ResetRouteDatabaseFiles();
+    void updateGameRouteFolderTime();    
     
 signals:
     void objectSelected(GameObj* obj);
