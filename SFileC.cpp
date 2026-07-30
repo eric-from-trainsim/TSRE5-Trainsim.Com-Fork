@@ -32,7 +32,7 @@
             //pliks->image[i] = new SFile::imgs();
             pliks->shader[i].name = "";
             for (int j = 0; j < (temp - 3) / 2; j++) {
-                pliks->shader[i].name += bufor->get();
+                pliks->shader[i].name += QChar(bufor->get());;
                 bufor->get();
             }
             pliks->shader[i].name = pliks->shader[i].name.toLower();
@@ -164,7 +164,7 @@
             //pliks->image[i] = new SFile::imgs();
             pliks->image[i].name = "";
             for (int j = 0; j < (temp - 3) / 2; j++) {
-                pliks->image[i].name += bufor->get();
+                pliks->image[i].name += QChar(bufor->get());;
                 bufor->get();
             }
             pliks->image[i].tex = -1;

@@ -1,0 +1,7 @@
+{
+ "cmake.generator": "MinGW Makefiles",
+  "cmake.useCMakePresets": "never",
+  "cmake.configureArgs": [
+    "-DCMAKE_PREFIX_PATH=C:/Qt/6.9.3/mingw_64"
+  ]
+}

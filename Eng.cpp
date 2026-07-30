@@ -30,7 +30,6 @@
 #include "TrainNetworkEng.h"
 #include "GeoCoordinates.h"
 #include "ContentHierarchyInfo.h"
-#include <QRegExp>
 #include <QStringList>
 #include <QString>
 

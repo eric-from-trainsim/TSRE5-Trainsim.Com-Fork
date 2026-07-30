@@ -651,23 +651,23 @@ void MapDataOSM::loadData(QByteArray* data){
                 tway->ref.push_back ((attr.value("ref").toLongLong()));
             } else if (name.toUpper() == ("TAG")&&(way || node)) {
                 //adres
-                if (attr.value("k").startsWith("ADDR", Qt::CaseInsensitive)) {
+                if (attr.value("k").startsWith(u"ADDR", Qt::CaseInsensitive)) {
                 }
                 //nazwa
-                else if (attr.value("k").startsWith("NAME", Qt::CaseInsensitive)) {
+                else if (attr.value("k").startsWith(u"NAME", Qt::CaseInsensitive)) {
                 }
                 //drogi
-                else if (attr.value("k").startsWith("ONEWAY", Qt::CaseInsensitive)) {}
-                else if (attr.value("k").startsWith("MAXSPEED", Qt::CaseInsensitive)) {}
-                else if (attr.value("k").startsWith("SURFACE", Qt::CaseInsensitive))  {}
-                else if (attr.value("k").startsWith("BRIDGE", Qt::CaseInsensitive)) {
+                else if (attr.value("k").startsWith(u"ONEWAY", Qt::CaseInsensitive)) {}
+                else if (attr.value("k").startsWith(u"MAXSPEED", Qt::CaseInsensitive)) {}
+                else if (attr.value("k").startsWith(u"SURFACE", Qt::CaseInsensitive)) {}
+                else if (attr.value("k").startsWith(u"BRIDGE", Qt::CaseInsensitive)) {
                     if (way) tway->val2 = 7;
                 }
-                else if (attr.value("k").startsWith("TUNNEL", Qt::CaseInsensitive)) {
+                else if (attr.value("k").startsWith(u"TUNNEL", Qt::CaseInsensitive)) {
                     if (way) tway->val2 = 6;
                 }
                 //miejsca
-                else if (attr.value("k").startsWith("AMENITY", Qt::CaseInsensitive)) {
+                else if (attr.value("k").startsWith(u"AMENITY", Qt::CaseInsensitive)) {
                     //System.out.println(attr.getValue("v").toUpperCase());
                     //if(node) {
                     //    uuu++;
@@ -675,14 +675,14 @@ void MapDataOSM::loadData(QByteArray* data){
                     //}
                 }
                 //bariery
-                else if (attr.value("k").startsWith("BARRIER", Qt::CaseInsensitive)) {}
+                else if (attr.value("k").startsWith(u"BARRIER", Qt::CaseInsensitive)) {}
                 //las
-                else if (attr.value("k").startsWith("WOOD", Qt::CaseInsensitive)) {}
+                else if (attr.value("k").startsWith(u"WOOD", Qt::CaseInsensitive)) {}
                 //sport
-                else if (attr.value("k").startsWith("SPORT", Qt::CaseInsensitive)) {}
+                else if (attr.value("k").startsWith(u"SPORT", Qt::CaseInsensitive)) {}
                 else {
                     //inne budynki 
-                    if (attr.value("k").startsWith("BUILDING", Qt::CaseInsensitive)) {
+                    if (attr.value("k").startsWith(u"BUILDING", Qt::CaseInsensitive)) {
                         if (way) tway->type = (short) OSMFeatures::LIST["BUILDING_YES"];
                         iii++;
                     }

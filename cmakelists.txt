@@ -1,0 +1,113 @@
+cmake_minimum_required(VERSION 3.16)
+
+# Project Definition
+project(TSRE5 VERSION 0.7 LANGUAGES CXX C)
+
+# Set C++ Standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Enable Qt Automatic Build Tools (MOC, UIC, RCC)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+# -------------------------------------------------------------------
+# 1. Find Dependencies
+# -------------------------------------------------------------------
+find_package(Qt6 COMPONENTS 
+    Core 
+    Gui 
+    Widgets 
+    Network 
+    OpenGL 
+    OpenGLWidgets
+    WebSockets 
+    REQUIRED
+)
+
+find_package(OpenGL REQUIRED)
+
+# -------------------------------------------------------------------
+# 2. Gather Sources and Headers
+# -------------------------------------------------------------------
+file(GLOB TSRE5_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+
+# -------------------------------------------------------------------
+# 3. Create Executable
+# -------------------------------------------------------------------
+add_executable(TSRE5 ${TSRE5_SOURCES})
+
+# -------------------------------------------------------------------
+# 4. Include Directories
+# -------------------------------------------------------------------
+target_include_directories(TSRE5 PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui
+    "E:/DEV/openal-soft-1.18.2-bin/include"
+    "E:/DEV/openal-soft-1.18.2-bin/libs/Win64"
+    "E:/dev/glut/glut32bit64bit"
+)
+
+# -------------------------------------------------------------------
+# 5. Link Directories & Libraries
+# -------------------------------------------------------------------
+target_link_directories(TSRE5 PRIVATE
+    "E:/DEV/openal-soft-1.18.2-bin/libs/Win64"
+    "E:/dev/glut/glut32bit64bit"
+)
+
+target_link_libraries(TSRE5 PRIVATE
+    # Qt 6 Libraries
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    Qt6::Network
+    Qt6::OpenGL
+    Qt6::OpenGLWidgets
+    Qt6::WebSockets
+    
+    # System Graphics
+    OpenGL::GL
+    OpenGL::GLU
+    
+    # External Libraries
+    OpenAL32
+    "E:/dev/glut/glut32bit64bit/glut64.lib"
+)
+
+# Output Directory Setting
+set_target_properties(TSRE5 PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/dist"
+)
+
+# -------------------------------------------------------------------
+# 6. Automatic DLL Deployment Post-Build
+# -------------------------------------------------------------------
+if(WIN32)
+    get_target_property(_qmake_executable Qt6::qmake IMPORTED_LOCATION)
+    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+    find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
+
+    add_custom_command(TARGET TSRE5 POST_BUILD
+        COMMAND "${WINDEPLOYQT_EXECUTABLE}"
+            --compiler-runtime
+            "$<TARGET_FILE:TSRE5>"
+        COMMENT "Deploying Qt and MinGW C++ runtime DLLs..."
+    )
+
+    # Copy 3rd-party DLLs
+    add_custom_command(TARGET TSRE5 POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "E:/DEV/openal-soft-1.18.2-bin/bin/Win64/soft_oal.dll"
+            "$<TARGET_FILE_DIR:TSRE5>/OpenAL32.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "E:/dev/glut/glut32bit64bit/glut64.dll"
+            "$<TARGET_FILE_DIR:TSRE5>/glut64.dll"
+        COMMENT "Copying external 3rd-party DLLs..."
+    )
+endif()

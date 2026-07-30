@@ -9,7 +9,8 @@
  */
 
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
+#include <QGuiApplication>
 #include <QDebug>
 #include <QtCore>
 #include <QFile>

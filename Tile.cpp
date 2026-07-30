@@ -714,7 +714,7 @@ void Tile::saveEmpty(int nx, int nz) {
     
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     out << "SIMISA@@@@@@@@@@JINX0w0t______\n";
     out << "\n";
@@ -747,7 +747,7 @@ void Tile::save() {
     
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     out << "SIMISA@@@@@@@@@@JINX0w0t______\n";
     out << "\n";
@@ -821,7 +821,7 @@ void Tile::saveWS() {
     
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     out << "SIMISA@@@@@@@@@@JINX0W0t______\n";
     out << "\n";

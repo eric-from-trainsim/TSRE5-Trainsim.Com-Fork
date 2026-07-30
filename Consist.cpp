@@ -914,7 +914,7 @@ void Consist::save(){
         return;
     }
     QTextStream out(&file);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
 
     out << "SIMISA@@@@@@@@@@JINX0D0t______\n";

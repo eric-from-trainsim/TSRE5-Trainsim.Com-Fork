@@ -1,0 +1,27 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "windows-userenv",
+      "hidden": true,
+      "environment": {
+        "QT_ROOT": "c:/Qt",
+        "QT_VERSION": "6.9.3",
+        "QT_ARCH": "mingw_64",
+        "QT_MINGW_VERSION": "mingw1310_64",
+        "VCPKG_ROOT": "e:/dev/vcpkg",
+        "VCPKG_TRIPLET": "x64-mingw-dynamic"
+      }
+    },
+    {
+      "name": "windows-qt-debug-userenv",
+      "inherits": ["windows-userenv", "windows-qt-debug"],
+      "displayName": "Windows Qt MinGW Debug (User Env)"
+    },
+    {
+      "name": "windows-qt-release-userenv",
+      "inherits": ["windows-userenv", "windows-qt-release"],
+      "displayName": "Windows Qt MinGW Release (User Env)"
+    }
+  ]
+}

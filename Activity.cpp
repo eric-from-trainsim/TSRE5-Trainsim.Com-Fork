@@ -355,7 +355,7 @@ void Activity::save() {
 
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     out << "SIMISA@@@@@@@@@@JINX0a0t______\n";
     out << "\n";
@@ -883,8 +883,8 @@ bool Activity::isOrtsHornAtCrossigns(){
 }
 //// EFO Add missing ortsAICrossingHornPattern
 bool Activity::isOrtsAICrossingHornPattern(){
-    if(ortsAICrossingHornPattern == 1)
-        return true;
+// NEW
+  if(ortsAICrossingHornPattern == "1" || ortsAICrossingHornPattern.toInt() == 1)        return true;
     return false;
 }
 

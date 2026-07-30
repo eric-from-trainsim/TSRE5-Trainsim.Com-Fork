@@ -13,6 +13,8 @@
 #include "Game.h"
 #include <QDebug>
 #include "ConEditorWindow.h"
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 CELoadWindow::CELoadWindow() {
     //this->setWindowFlags( Qt::CustomizeWindowHint );
@@ -40,9 +42,9 @@ CELoadWindow::CELoadWindow() {
 
     
     nowaTrasa = new QLineEdit();
-    QRegExp rx("^[a-zA-Z0-9\\_\\-\\ ]*$");
     //QRegExp rx("[\\/<>|\":?*].");
-    QRegExpValidator* v = new QRegExpValidator(rx);
+    QRegularExpression rx("^[a-zA-Z0-9\\_\\-\\ ]*$");
+    QRegularExpressionValidator* v = new QRegularExpressionValidator(rx, this);
     nowaTrasa->setValidator(v);
     
     QVBoxLayout *mainLayout = new QVBoxLayout;

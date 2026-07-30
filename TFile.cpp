@@ -595,7 +595,7 @@ void TFile::save(QString name){
     write.setByteOrder(QDataStream::LittleEndian);
     write.setFloatingPointPrecision(QDataStream::SinglePrecision);
     save(write);
-    write.unsetDevice();
+    write.setDevice(nullptr);
     file->close();
 }
 

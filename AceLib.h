@@ -9,29 +9,24 @@
  */
 
 #ifndef ACELIB_H
-#define	ACELIB_H
+#define ACELIB_H
 
 #include <QThread>
 #include "Texture.h"
 
 class AceLib : public QThread
- {
-     Q_OBJECT
+{
+    Q_OBJECT
 
 public:
     static bool IsThread;
     AceLib();
-    AceLib(const AceLib& orig);
+    AceLib(const AceLib& orig) = delete; // <-- Mark deleted or remove entirely
     virtual ~AceLib();
-    //static bool LoadACE(Texture* texture);
+    
     Texture* texture;
     static void save(QString path, Texture* t);
     void run();
-private:
-    
-protected:
-    
 };
 
-#endif	/* ACELIB_H */
-
+#endif /* ACELIB_H */

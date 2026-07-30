@@ -254,7 +254,7 @@ bool TSectionDAT::saveRoute() {
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
     out.setRealNumberPrecision(6);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     out << "SIMISA@@@@@@@@@@JINX0T0t______\n\n";
     

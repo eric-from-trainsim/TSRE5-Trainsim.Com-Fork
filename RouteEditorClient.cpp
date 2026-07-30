@@ -80,7 +80,7 @@ void RouteEditorClient::sendTextMessage(QString msg) {
 void RouteEditorClient::sendUtf16Message(QString msg) {
     QByteArray data;
     QTextStream out(&data);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     out << msg;
     out.flush();
@@ -378,7 +378,7 @@ void RouteEditorClient::updateTrackSectionData(TSection *s){
     qDebug() << "send track section";
     QByteArray outd;
     QTextStream out(&outd);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     out << "update_tracksection ( \n";
     if(s != NULL)
@@ -392,7 +392,7 @@ void RouteEditorClient::updateTrackShapeData(TrackShape *s){
     qDebug() << "send track shape";
     QByteArray outd;
     QTextStream out(&outd);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     out << "update_trackshape ( \n";
     s->saveToStream(out);
@@ -405,7 +405,7 @@ void RouteEditorClient::updateTrackItemData(int iid, int tdbType, TRitem *n) {
     qDebug() << "send tritem";
     QByteArray outd;
     QTextStream out(&outd);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     if (tdbType == 0)
         out << "update_tritem_tdb ( \n";
@@ -430,7 +430,7 @@ void RouteEditorClient::updateTrackNodeData(int nid, int tdbType, TRnode *n) {
     qDebug() << "send trnode";
     QByteArray outd;
     QTextStream out(&outd);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     if (tdbType == 0)
         out << "update_trnode_tdb ( \n";
@@ -450,7 +450,7 @@ void RouteEditorClient::updateWorldObjData(WorldObj *o) {
     qDebug() << "send wobj";
     QByteArray outd;
     QTextStream out(&outd);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     out << "update_worldobj (\n";
     out << "x ( " + QString::number(o->x) + " )\n";
@@ -482,7 +482,7 @@ void RouteEditorClient::updateTerrainHeightmap(Terrain *t) {
         out << (qint32) t->mojex;
         out << (qint32) t->mojez;
         t->saveRAWfileToStreamFloat(out);
-        out.unsetDevice();
+        out.setDevice(nullptr);
         m_webSocket->sendBinaryMessage(outd);
     }
 }
@@ -501,7 +501,7 @@ void RouteEditorClient::updateTerrainTFile(Terrain *t) {
         out << (qint32) t->mojex;
         out << (qint32) t->mojez;
         t->saveTfileToStream(out);
-        out.unsetDevice();
+        out.setDevice(nullptr);
         m_webSocket->sendBinaryMessage(outd);
     }
 }
@@ -510,7 +510,7 @@ void RouteEditorClient::updatePointerPosition(int X, int Z, float x, float y, fl
     //qDebug() << "send position";
     QByteArray outd;
     QTextStream out(&outd);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     out << "update_pointer_position ( ";
     out << QString::number(X) << " ";

@@ -207,9 +207,10 @@ void CameraRot::check_coords() {
 }
 
 void CameraRot::MouseWheel(QWheelEvent* e){
-        if(e->delta() > 0)
+        // NEW (Qt 6)
+          if(e->angleDelta().y() > 0)
             moveForward(30);
-        if(e->delta() < 0)
+          if(e->angleDelta().y() < 0)
             moveBackward(30);
 }
 
@@ -218,20 +219,20 @@ void CameraRot::MouseMove(QMouseEvent* e) {
         patrzX((float) (float) (starex - e->x()) / 30*(fov/45.0));
         patrzY((float) (float) (starey - e->y()) / 30*(fov/45.0));
     }
-    starex = e->x();
-    starey = e->y();
+    starex = e->position().x();
+    starey = e->position().y();
 }
 
 void CameraRot::MouseDown(QMouseEvent* e) {
     lpm = 1;
-    starex = e->x();
-    starey = e->y();
+    starex = e->position().x();
+    starey = e->position().y();
 }
 
 void CameraRot::MouseUp(QMouseEvent* e) {
     lpm = 0;
-    starex = e->x();
-    starey = e->y();
+    starex = e->position().x();
+    starey = e->position().y();
 }
 
 void CameraRot::keyUp(QKeyEvent * e) {

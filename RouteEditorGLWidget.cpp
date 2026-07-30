@@ -1509,30 +1509,35 @@ void RouteEditorGLWidget::mousePressEvent(QMouseEvent *event) {
 }
 
 void RouteEditorGLWidget::wheelEvent(QWheelEvent *event) {
-    float numDegrees = 0.01 * event->delta();
+    QPoint numPixels = event->pixelDelta();
+    QPoint numDegrees = event->angleDelta() / 8;
 
-    if (event->orientation() == Qt::Vertical) {
+    if (!numDegrees.isNull()) {
+        float deltaValue = numDegrees.y(); // Vertical delta
+        float numStep = 0.01f * deltaValue;
+
         if (toolEnabled == "selectTool" || toolEnabled == "placeTool") {
             /// Move the selected object up or down
-            if (selectedObj != NULL) {
+            if (selectedObj != nullptr) {
                 if (selectedObj->typeObj == GameObj::worldobj) {
                     Undo::StateBeginIfNotExist();
                     Undo::PushGameObjData(selectedObj);
-                    ((WorldObj*) selectedObj)->translate(0, numDegrees*moveStep, 0);
+                    ((WorldObj*) selectedObj)->translate(0, deltaValue * moveStep, 0);
                 }
-                else
-                { 
+            } else { 
                 /// EFO Move the camera forward or backward if no object selected
-                if(numDegrees != 0)  { camera->moveForward( (numDegrees*10) ); }                
-                }
+                if (deltaValue != 0.0f) { 
+                    camera->moveForward(deltaValue * 10.0f); 
+                }                
             }
         } else {
             /// EFO Move the camera forward or backward if in free view 
-            if(numDegrees != 0)  { camera->moveForward( (numDegrees*10) ); }
+            if (deltaValue != 0.0f) { 
+                camera->moveForward(deltaValue * 10.0f); 
+            }
         }
-    } else {
-        
     }
+
     event->accept();
     //qDebug() << "scrollwheel: " << numDegrees;
 }
@@ -1559,16 +1564,16 @@ void RouteEditorGLWidget::mouseMoveEvent(QMouseEvent *event) {
     bolckContextMenu = false;
     Game::currentShapeLib = currentShapeLib;
     if (!route->loaded) return;
-    /*int dx = event->x() - m_lastPos.x();
-    int dy = event->y() - m_lastPos.y();
+    /*int dx = event->position().x() - m_lastPos.x();
+    int dy = event->position().y() - m_lastPos.y();
 
     if (event->buttons() & Qt::LeftButton) {
 
     } else if (event->buttons() & Qt::RightButton) {
 
     }*/
-    mousex = event->x() * Game::PixelRatio;
-    mousey = event->y() * Game::PixelRatio;
+    mousex = event->position().x() * Game::PixelRatio;
+    mousey = event->position().y() * Game::PixelRatio;
 
     if ((event->buttons() & 2) == Qt::RightButton) {
         camera->MouseMove(event);
@@ -2062,7 +2067,7 @@ void RouteEditorGLWidget::pickObjRotForCamera(){
             
             qDebug() << "starting = " << currcam << " camrot = " << camrot;
             
-            camera->setPlayerRot(camrot,NULL);
+            camera->setPlayerRot(camrot,0.0f);
             CamObj = NULL;
             return;
   //      }
@@ -2071,7 +2076,7 @@ void RouteEditorGLWidget::pickObjRotForCamera(){
 
 void RouteEditorGLWidget::pickObjRotForCameraFlip(){
             double camrot = (camera->getRotX()) + M_PI;            
-            camera->setPlayerRot(camrot,NULL);  
+            camera->setPlayerRot(camrot,0.0f);  
             if(selectedObj != NULL) selectedObj->unselect(); 
             setSelectedObj(NULL);
 }

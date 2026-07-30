@@ -119,7 +119,7 @@ void Traffic::save(){
 
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
     
     out << "SIMISA@@@@@@@@@@JINX0f0t______\n";

@@ -18,6 +18,8 @@
 #include "NewRouteWindow.h"
 #include "GeoCoordinates.h"
 #include "TarFile.h"
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 LoadWindow::LoadWindow() {
     //this->setWindowFlags( Qt::CustomizeWindowHint );
@@ -49,9 +51,13 @@ LoadWindow::LoadWindow() {
     
 
     nowaTrasa = new QLineEdit();
-    QRegExp rx("^[a-zA-Z0-9\\_\\-\\ ]*$");
-    //QRegExp rx("[\\/<>|\":?*].");
-    QRegExpValidator* v = new QRegExpValidator(rx);
+    // OLD
+    // QRegExp rx("^[a-zA-Z0-9\\_\\-\\ ]*$");
+    // QRegExpValidator* v = new QRegExpValidator(rx);
+
+    // NEW
+    QRegularExpression rx("^[a-zA-Z0-9\\_\\-\\ ]*$");
+    QRegularExpressionValidator* v = new QRegularExpressionValidator(rx);
     nowaTrasa->setValidator(v);
     
     QVBoxLayout *mainLayout = new QVBoxLayout;

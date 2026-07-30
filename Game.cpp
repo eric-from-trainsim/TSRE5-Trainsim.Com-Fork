@@ -40,7 +40,7 @@
 //////// Version
 //////////////////////////////////
 
-QString Game::AppVersion = "Trainsim.Com Fork v0.8.006m";  // over-ride from main.cpp
+QString Game::AppVersion = "Trainsim.Com Fork v0.8.006n";  // over-ride from main.cpp
 
 
 bool Game::ServerMode = false;
@@ -126,7 +126,7 @@ int Game::newRouteZ = 15000;
 bool Game::consoleOutput = true;
 int Game::fpsLimit = 59;
 bool Game::ortsEngEnable = true;
-bool Game::sortTileObjects = FALSE;
+bool Game::sortTileObjects = false;
 int Game::oglDefaultLineWidth = 1;
 bool Game::showWorldObjPivotPoints = false;
 int Game::shadowMapSize = 2048;
@@ -389,7 +389,7 @@ QString formattedLine = QString("##  %1 Log File %2  ##")
     }
     
     QTextStream in(&file);
-    in.setCodec("UTF-8");
+    in.setEncoding(QStringConverter::Utf8);
     QString line;
     QStringList args;
     QString setval;
@@ -411,7 +411,11 @@ QString formattedLine = QString("##  %1 Log File %2  ##")
         }
        
        // EFO Main comment stripper
-       if(line.startsWith(("#", Qt::CaseInsensitive)) or (line.startsWith("//", Qt::CaseInsensitive))) {  if(Game::debugOutput) qDebug() << "Skip#   : " << line;  ; continue;}
+       if (line.startsWith("#", Qt::CaseInsensitive) || line.startsWith("//", Qt::CaseInsensitive)) 
+       { 
+          if (Game::debugOutput) qDebug() << "Skip#   : " << line; 
+          continue;
+       }
         
         //args = line.split("=");
         args.clear();

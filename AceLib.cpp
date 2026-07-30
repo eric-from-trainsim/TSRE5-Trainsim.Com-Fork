@@ -372,6 +372,7 @@ void AceLib::save(QString path, Texture* t){
         }
     }
     
-    write.unsetDevice();
-    file->close();
+   // NEW (Qt 6)
+   write.setDevice(nullptr); 
+   file->close();
 }

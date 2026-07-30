@@ -19,6 +19,8 @@
 #include "Game.h"
 #include "TextEditDialog.h"
 #include "GLMatrix.h"
+#include <QGuiApplication> 
+#include <QScreen> 
 
 PropertiesSignal::PropertiesSignal() {
     signalWindow = new SignalWindow(this);
@@ -276,7 +278,7 @@ void PropertiesSignal::showObj(GameObj* obj){
 
     signalWindow->showObj(sobj);
     
-    QRect rec = QApplication::desktop()->screenGeometry();
+    QRect rec = QGuiApplication::primaryScreen()->geometry();
     signalWindow->move(rec.width()/2-signalWindow->width()/2 ,rec.height()/2-signalWindow->height()/2);
     
     this->flags.setText(ParserX::MakeFlagsString(sobj->staticFlags));

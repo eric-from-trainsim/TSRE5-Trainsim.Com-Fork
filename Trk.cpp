@@ -321,7 +321,7 @@ void Trk::save() {
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     out.setDevice(&file);
     out.setRealNumberPrecision(8);
-    out.setCodec("UTF-16");
+    out.setEncoding(QStringConverter::Utf16);
     out.setGenerateByteOrderMark(true);
 
     out << "SIMISA@@@@@@@@@@JINX0r1t______" << "\n\n";
